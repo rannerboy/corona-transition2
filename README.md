@@ -52,7 +52,9 @@ transition.color(displayObject, {
     transitionReverse = easing.outQuint,
     
     -- If cancelWhen is set it will be called on every frame and when it returns true the transition will be automatically cancelled.
-    cancelWhen = function() return (shouldCancel == true) end
+    cancelWhen = function()
+        return (shouldCancel == true)
+    end
 })
 
 --[[
