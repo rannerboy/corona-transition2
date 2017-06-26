@@ -1,4 +1,5 @@
 # corona-transition2
+
 transition2 is an extension to the [Corona transition library](https://docs.coronalabs.com/api/library/transition/index.html). It comes with a few new transition functions and can easily be extended with your own custom transition functions.
 
 The current documentation is very brief. Have a look at the source code for better understanding, it's fairly well commented.
@@ -90,6 +91,22 @@ timer.performWithDelay(10000, function()
     transition.cancel(transitionTo)
 end)
 ```
+
+## Transition functions
+
+TODO: Examples and parameter references will be added later...
+
+### color()
+Fades fill and/or stroke color smoothly from one color into another.
+
+### glow()
+A convenience function that uses the color() transition to create a glowing effect.
+
+### bounce()
+Bounces a display object.
+
+### moveSine()
+Moves a display object along a sine wave path.
 
 ## Creating custom transitions
 
