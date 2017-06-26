@@ -29,12 +29,8 @@ local function doExtendedTransition(transitionExtension, target, params)
     local easingFunc = params.transition or easing.linear            
     local easingReverseFunc = params.transitionReverse or easingFunc
     local tag = params.tag or "untagged"    
-    local iterations = params.iterations or 1 
-    local currentIteration = 1
+    local iterations = params.iterations or 1     
     local reverse = transitionExtension.reverse or params.reverse or false    
-    
-    -- This variable keeps track of which part of the cycle the transition is currently in
-    local isReverseCycle = false    
     
     -- Create a new transition reference that will be returned from the transition extension function
     -- This reference will be used to uniquely identify the transition
@@ -67,6 +63,11 @@ local function doExtendedTransition(transitionExtension, target, params)
     -- Save transition reference in table indexed by tag
     transitionsByTag[tag] = transitionsByTag[tag] or {}
     transitionsByTag[tag][transitionRef] = true    
+    
+    -- Keep track of which iteration is currently running
+    local currentIteration = 1
+    -- Keep track of which part of the cycle the transition is currently in
+    local isReverseCycle = false    
     
     -- Initialize timing variables
     local lastFrameTimestamp = system.getTimer()
