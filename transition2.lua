@@ -15,10 +15,10 @@ local transition2 = require("transition2-main")
 
 return transition2({        
     -- Transition functions
-    color = require("lib.transition2-color"),
-    bounce = require("lib.transition2-bounce"),
-    moveSine = require("lib.transition2-moveSine"),   
+    color = require("transition2lib.transition2-color"),
+    bounce = require("transition2lib.transition2-bounce"),
+    moveSine = require("transition2lib.transition2-moveSine"),   
     
     -- Convenience functions (specialized versions of transitions)
-    glow = require("lib.transition2-glow"),       
+    glow = require("transition2lib.transition2-glow"),       
 })
