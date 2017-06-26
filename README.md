@@ -97,7 +97,7 @@ end)
 TODO: Examples and parameter references will be added later...
 
 ### color()
-Fades fill and/or stroke color smoothly from one color into another.
+Transitions the fill and/or stroke color of a display object smoothly from one color to another.
 
 ### glow()
 A convenience function that uses the color() transition to create a glowing effect.
