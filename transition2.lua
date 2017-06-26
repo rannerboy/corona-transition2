@@ -2,7 +2,6 @@
 transition2 is an extensible wrapper for the existing Corona transition library
 
 Create custom transitions easily and use them together with already existing transitions.
-See the bottom of this file for how to add new transition functions.
 
 To implement your own custom transition, see transition2-template.lua and example transitions like transition2-color.lua and transition2-bounce.lua.
 Then add them to the config passed into the transition2() function below.
