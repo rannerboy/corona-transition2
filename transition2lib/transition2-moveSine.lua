@@ -55,7 +55,7 @@ return {
         params.transition = easing.linear
         params.transitionReverse = easing.linear
         params.reverse = false
-        params.time = params.time and (params.time/2) or 500 
+        params.time = params.time and params.time or 500 
         params.startY = displayObject.y
         params.startX = displayObject.x
         params.startDegreesX = params.startDegreesX and (params.startDegreesX % 360) or 0
