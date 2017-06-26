@@ -10,6 +10,7 @@ The current documentation is very brief. Have a look at the source code for bett
 ```lua
 local transition = require("transition2")
 
+-- This variable will be used to demonstrate auto-cancel of transitions
 local shouldCancel = false
 
 --[[
