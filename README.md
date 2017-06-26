@@ -106,7 +106,7 @@ A convenience function that uses the color() transition to create a glowing effe
 Bounces a display object.
 
 ### moveSine()
-Moves a display object along a sine wave path.
+Moves a display object along a sine wave path. Radius can be specified for the x axis, y axis, or both. Combine one moveSine() transition for the x axis with one for the y axis to make your display object move in more complex patterns.
 
 ## Creating custom transitions
 
