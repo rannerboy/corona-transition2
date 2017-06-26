@@ -87,3 +87,11 @@ timer.performWithDelay(10000, function()
     transition.cancel(transitionTo)
 end)
 ```
+
+## Creating custom transitions
+
+To implement your own custom transition, see **transition2-template.lua** and already implemented transitions like **transition2-color.lua** and **transition2-bounce.lua**.
+
+Then expose your transition function by including it in **transition2.lua**.
+
+The file **transition2-main.lua** is the main algorithm for the transition2 library and should *NOT* be touched when implementing custom transitions.
