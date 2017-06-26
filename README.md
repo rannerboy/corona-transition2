@@ -20,8 +20,8 @@ Most params here are optional and are only included to show what's possible to d
 --]]
 transition.color(displayObject, {
     -- These params are specific for the color transition
-    startColor = white,
-    endColor = orange,
+    startColor = {1, 1 ,1, 1}, -- White
+    endColor = {1, 0.5, 0, 1}, -- Orange
     stroke = false,
     fill = true,
     
