@@ -11,7 +11,7 @@ can also be used on transition2, like transition2.to() and transition2.blink()
 
 Markus Ranner 2017
 --]]
-local transition2 = require("transition2-main")
+local transition2 = require("transition2lib.transition2-main")
 
 return transition2({        
     -- Transition functions
