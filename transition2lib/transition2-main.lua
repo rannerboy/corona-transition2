@@ -1,5 +1,7 @@
 --[[
 This is the main algorithm for the transition2 library.
+
+Markus Ranner 2017
 --]]
 local transition = require("transition")
 
