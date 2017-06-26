@@ -3,6 +3,8 @@ transition2 is an extension to the [Corona transition library](https://docs.coro
 
 The current documentation is very brief. Have a look at the source code for better understanding, it's fairly well commented.
 
+**NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**.
+
 ## Basic usage
 
 ```lua
