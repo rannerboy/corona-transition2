@@ -16,10 +16,9 @@ return {
     onValue = function(target, params, value)        
         local radians = toRadians(value)
         
-        if (params.horizontalFlip) then
+        if (params.horizontalFlip) then            
             local radius = target.width/2
             local xOffset = radius - (radius * math.cos(radians))
-            --print(yOffset)
             target.path.x1 = xOffset
             target.path.x2 = xOffset
             target.path.x3 = -xOffset
@@ -28,7 +27,9 @@ return {
             -- Skew the y coordinates to create perspective            
             local depthOffset = radius * math.sin(radians)            
             local yOffset = (depthOffset / radius) * target.height/2  * params.perspective
-            --print("xOffset = " .. xOffset)
+            if (target.height > target.width) then
+                yOffset = yOffset * (target.width/target.height)
+            end
             target.path.y1 = yOffset
             target.path.y2 = -yOffset
             target.path.y3 = yOffset
@@ -44,11 +45,11 @@ return {
             target.path.y3 = -yOffset
             
             -- Skew the x coordinates to create perspective            
-            local depthOffset = radius * math.sin(radians)
-            --print("depth offset = " .. depthOffset)          
-            
-            local xOffset = (depthOffset / radius) * target.width/2 * params.perspective
-            --print("xOffset = " .. xOffset)
+            local depthOffset = radius * math.sin(radians)            
+            local xOffset = (depthOffset / radius) * target.width/2 * params.perspective 
+            if (target.width > target.height) then
+                xOffset = xOffset * (target.height/target.width)
+            end
             target.path.x1 = xOffset
             target.path.x2 = -xOffset
             target.path.x3 = xOffset
