@@ -1,3 +1,26 @@
+--[[
+
+Rotates a display object in the z dimension.
+Requires the target display object to have a path with four nodes, like images and rects.
+
+Example usage:
+
+local transition = require("transition2")
+
+transition.zRotate(displayObject, {
+    degrees = 360,
+    time = 2000,
+    iterations = 0,    
+    transition = easing.inOutSine,
+    reverse = true,  
+    perspective = 0.25, -- A value between 0-1. Defaults to 0.5.
+    horizontal = true, -- Set to true for horizontal rotation (around the y axis). Default is vertical rotation (around the x axis)
+    disableStrokeScaling = true, -- Set to true to disable scaling of strokes. Defaults is false, i.e. strokes are scaled.
+})
+
+Markus Ranner 2017
+
+--]]
 local function toRadians(degrees)
     return ((degrees % 360) * math.pi / 180)
 end
@@ -89,6 +112,7 @@ return {
     end,
 
     cancelWhen = function(target, params)
+        -- This will cancel the transition if the display object no longer has x and y values
         return target.x == nil or target.y == nil
     end
 }
