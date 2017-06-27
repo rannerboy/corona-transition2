@@ -5,19 +5,19 @@ end
 local MAX_PERSPECTIVE_FACTOR = 0.4
 
 return {
-    getStartValue = function(target, params)     
-        return 0
+    getStartValue = function(target, params)             
+        return 0        
     end,
 
     getEndValue = function(target, params)        
         return params.degrees
     end,
 
-    onValue = function(target, params, value)        
+    onValue = function(target, params, value)            
         local radians = toRadians(value)
         
         if (params.horizontalFlip) then            
-            local radius = target.width/2
+            local radius = target.width/2 - target.strokeWidth
             local xOffset = radius - (radius * math.cos(radians))
             target.path.x1 = xOffset
             target.path.x2 = xOffset
@@ -36,7 +36,7 @@ return {
             target.path.y4 = -yOffset
         else        
             -- Vertical flip
-            local radius = target.height/2
+            local radius = target.height/2 - target.strokeWidth
             local yOffset = radius - (radius * math.cos(radians))
             
             target.path.y1 = yOffset
