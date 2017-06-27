@@ -32,7 +32,7 @@ return {
     @return A params table
     --]]
     getParams = function(target, params)        
-    end
+    end,
 
     --[[
     Optional.

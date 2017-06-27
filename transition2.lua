@@ -18,6 +18,7 @@ return transition2({
     color = require("transition2lib.transition2-color"),
     bounce = require("transition2lib.transition2-bounce"),
     moveSine = require("transition2lib.transition2-moveSine"),   
+    zFlip = require("transition2lib.transition2-zFlip"),
     
     -- Convenience functions (specialized versions of transitions)
     glow = require("transition2lib.transition2-glow"),       
