@@ -98,17 +98,21 @@ end)
 
 TODO: Examples and parameter references will be added later...
 
+### bounce()
+Bounces a display object.
+
 ### color()
 Transitions the fill and/or stroke color of a display object smoothly from one color to another.
 
 ### glow()
 A convenience function that uses the color() transition to create a glowing effect.
 
-### bounce()
-Bounces a display object.
-
 ### moveSine()
 Moves a display object along a sine wave path. Radius can be specified for the x axis, y axis, or both. Combine one moveSine() transition for the x axis with one for the y axis to make your display object move in more complex patterns.
+
+### zRotate()
+Rotates a display object in the z dimension, either horizontally or vertically.
+Requires the target display object to have a path with four nodes ((x1, y1), ..., (x4, y4)), like images and rects.
 
 ## Creating custom transitions
 
