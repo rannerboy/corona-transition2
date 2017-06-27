@@ -26,8 +26,10 @@ transition.color(displayObject, {
     fill = true,
     
     --[[
+    
     Below are general parameters that can be applied to all transition2 functions
     A couple of them are transition2 specific, but most of them work just like for the original Corona transition library    
+    
     --]]
     time = 1000,
     delay = 1000,        
@@ -39,15 +41,18 @@ transition.color(displayObject, {
     onPause = function(target) print("onComplete") end,    
     onResume = function(target) print("onResume") end,
     onCancel = function(target) print("onCancel") end,    
+    
     -- onRepeat will be called BETWEEN EACH iteration, except for the last one.
     -- It will be exectued AFTER iterationDelay, just when a new iteration is started.
     onRepeat = function(target) print("onRepeat") end,    
     
     --[[
-    transition2 specific params
+    
+    transition2 specific params below
+    
     --]]    
     
-    -- iterationDelay will occur between each iteration, but not before the first one.
+    -- iterationDelay will only occur between iterations, i.e. not before the first iteration or after the last iteration.
     iterationDelay = 500,
     
     -- onIterationComplete will be called AFTER EACH iteration, including the last one.
