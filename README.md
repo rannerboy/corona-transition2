@@ -31,9 +31,7 @@ transition.color(displayObject, {
     --]]
     time = 1000,
     delay = 1000,        
-    iterations = 0,
-    -- iterationDelay will occur between each iteration, but not before the first one.
-    iterationDelay = 500,
+    iterations = 0,    
     transition = easing.inSine,    
     tag = "tag1",    
     onStart = function(target) print("onStart") end,    
@@ -41,16 +39,20 @@ transition.color(displayObject, {
     onPause = function(target) print("onComplete") end,    
     onResume = function(target) print("onResume") end,
     onCancel = function(target) print("onCancel") end,    
-    -- onRepeat will be called BETWEEN EACH iteration, not after the last one.
+    -- onRepeat will be called BETWEEN EACH iteration, except for the last one.
     -- It will be exectued AFTER iterationDelay, just when a new iteration is started.
-    onRepeat = function(target) print("onRepeat") end,
-    -- onIterationComplete will be called AFTER EACH iteration, even the last one.
-    -- It will be executed BEFORE iterationDelay, just when an iteration is completed.
-    onIterationComplete = function(target) print("onIterationComplete") end,
+    onRepeat = function(target) print("onRepeat") end,    
     
     --[[
     transition2 specific params
     --]]    
+    
+    -- iterationDelay will occur between each iteration, but not before the first one.
+    iterationDelay = 500,
+    
+    -- onIterationComplete will be called AFTER EACH iteration, including the last one.
+    -- It will be executed BEFORE iterationDelay, just when an iteration is completed.
+    onIterationComplete = function(target) print("onIterationComplete") end,
     
     -- Setting reverse = true makes the transition reverse back to its start value after the end value is reached
     reverse = true,
