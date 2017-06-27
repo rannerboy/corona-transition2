@@ -72,7 +72,7 @@ local function doExtendedTransition(transitionExtension, target, params)
     local isReverseCycle = false    
     
     -- Initialize timing variables
-    local lastFrameTimestamp = system.getTimer()
+    local lastFrameTimestamp = nil -- This will not be set until transition is actually started, after a possible delay 
     local currentTransitionTime = 0
     local totalTransitionTime = 0 -- This is used to get better timing accuracy for transitions that loop over many iterations
     
@@ -189,6 +189,7 @@ local function doExtendedTransition(transitionExtension, target, params)
     
     -- Start transition
     timer.performWithDelay(delay, function()            
+        lastFrameTimestamp = system.getTimer()
         Runtime:addEventListener("enterFrame", transitionRef.enterFrameListener)
         if (transitionRef.onStart) then
             transitionRef.onStart(target)
