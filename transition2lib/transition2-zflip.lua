@@ -2,8 +2,6 @@ local function toRadians(degrees)
     return ((degrees % 360) * math.pi / 180)
 end
 
-local MAX_PERSPECTIVE_FACTOR = 0.4
-
 local function scaleStroke(target, params, depthOffsetRatio)
     if ((not params.disableStrokeScaling) and params.originalStrokeWidth) then
         target.strokeWidth = params.originalStrokeWidth * (1 - math.abs(depthOffsetRatio))                
@@ -72,6 +70,8 @@ return {
     end,
  
     getParams = function(target, params)  
+        local MAX_PERSPECTIVE_FACTOR = 0.4
+        
         params.horizontal = (params.horizontal == true)
         
         if ((params.perspective ~= nil) and (params.perspective >= 0) and (params.perspective <= 1)) then
