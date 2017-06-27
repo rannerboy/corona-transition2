@@ -26,6 +26,7 @@ local function doExtendedTransition(transitionExtension, target, params)
     -- Get parameter values and set some default values
     local targetTransitionTime = params.time or 500
     local delay = params.delay or 0
+    local iterationDelay = params.iterationDelay or 0
     local easingFunc = params.transition or easing.linear            
     local easingReverseFunc = params.transitionReverse or easingFunc
     local tag = params.tag or "untagged"    
@@ -46,6 +47,7 @@ local function doExtendedTransition(transitionExtension, target, params)
         onResume = params.onResume,
         onCancel = params.onCancel,
         onRepeat = params.onRepeat,
+        onIterationComplete = params.onIterationComplete,
         cancelWhen = function()
             -- The cancelWhen function can be set both in params and in the transition config, so we check both to see if at least one is fulfilled.
             return (
@@ -136,6 +138,12 @@ local function doExtendedTransition(transitionExtension, target, params)
                 easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
                 currentTransitionTime = 0
             else      
+                -- Make a callback at the end of each iteration
+                -- This is not the same as onRepeat. onIterationComplete will be called at the end of EACH iteration, and before any iterationDelay.
+                if (transitionRef.onIterationComplete) then
+                    transitionRef.onIterationComplete(target)
+                end
+                
                 -- Check if we are done with our iterations
                 -- Note! iterations == 0 means endless iterations
                 if ((iterations > 0) and (currentIteration >= iterations)) then
@@ -145,20 +153,34 @@ local function doExtendedTransition(transitionExtension, target, params)
                     if (transitionRef.onComplete) then
                         transitionRef.onComplete(target)
                     end
-                else 
+                else
                     -- Start a new iteration
-                    currentIteration = currentIteration + 1
-                    currentTransitionTime = 0    
-                    isReverseCycle = false
                     
-                    -- If doing reverse transition we must restore some values before starting the next iteration
-                    if (reverse) then
-                        startValue, endValue = endValue, startValue
-                        easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
+                    local function startNextIteration()
+                        currentIteration = currentIteration + 1
+                        currentTransitionTime = 0    
+                        isReverseCycle = false
+                        
+                        -- If doing reverse transition we must restore some values before starting the next iteration
+                        if (reverse) then
+                            startValue, endValue = endValue, startValue
+                            easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
+                        end
+                        
+                        if (transitionRef.onRepeat) then
+                            transitionRef.onRepeat(target)
+                        end
                     end
-                    
-                    if (transitionRef.onRepeat) then
-                        transitionRef.onRepeat(target)
+                                        
+                    -- Delay start of next generation is specified in params
+                    if (iterationDelay and iterationDelay > 0) then
+                        transitionRef.isPaused = true
+                        timer.performWithDelay(iterationDelay, function()
+                            transitionRef.isPaused = false
+                            startNextIteration()
+                        end)
+                    else
+                        startNextIteration()
                     end
                 end
             end
