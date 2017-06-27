@@ -30,16 +30,23 @@ transition.color(displayObject, {
     A couple of them are transition2 specific, but most of them work just like for the original Corona transition library    
     --]]
     time = 1000,
-    delay = 1000,    
+    delay = 1000,        
     iterations = 0,
+    -- iterationDelay will occur between each iteration, but not before the first one.
+    iterationDelay = 500,
     transition = easing.inSine,    
     tag = "tag1",    
     onStart = function(target) print("onStart") end,    
     onComplete = function(target) print("onComplete") end,
     onPause = function(target) print("onComplete") end,    
     onResume = function(target) print("onResume") end,
-    onCancel = function(target) print("onCancel") end,
+    onCancel = function(target) print("onCancel") end,    
+    -- onRepeat will be called BETWEEN EACH iteration, not after the last one.
+    -- It will be exectued AFTER iterationDelay, just when a new iteration is started.
     onRepeat = function(target) print("onRepeat") end,
+    -- onIterationComplete will be called AFTER EACH iteration, even the last one.
+    -- It will be executed BEFORE iterationDelay, just when an iteration is completed.
+    onIterationComplete = function(target) print("onIterationComplete") end,
     
     --[[
     transition2 specific params
