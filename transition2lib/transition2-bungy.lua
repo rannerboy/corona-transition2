@@ -38,13 +38,31 @@ return {
         local offset = value        
         local path = displayObject.path
         
-        if (params.offsetX ~= 0) then            
+        if (params.offsetX) then            
+             if (not isReverseCycle) then
+                local offsetValue = offset.x
+                
+                if (params.offsetX > 0) then
+                    path.x3 = offsetValue
+                    path.x4 = offsetValue
+                else 
+                    path.x1 = offsetValue
+                    path.x2 = offsetValue
+                end
+            else              
+                local offsetValue = params.offsetX - offset.x
+                
+                if (params.offsetX > 0) then
+                    path.x1 = offsetValue
+                    path.x2 = offsetValue
+                else
+                    path.x3 = offsetValue
+                    path.x4 = offsetValue
+                end
+            end
         end
         
-        if (params.offsetY ~= 0) then
-            --local offsetY = (params.radiusY * math.sin(toRadians(degrees.y)))
-            --displayObject.y = params.startY + offsetY            
-            
+        if (params.offsetY) then
             if (not isReverseCycle) then
                 local offsetValue = offset.y
                 
@@ -71,8 +89,8 @@ return {
  
     getParams = function(displayObject, params)        
         params.transition = easing.outBack
-        params.reverse = true
         params.transitionReverse = easing.outBack
+        params.reverse = true        
         return params
     end,
     
