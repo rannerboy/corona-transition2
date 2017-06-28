@@ -55,6 +55,7 @@ local function doExtendedTransition(transitionExtension, target, params)
         onResume = params.onResume,
         onCancel = params.onCancel,
         onRepeat = params.onRepeat,
+        onIterationStart = params.onIterationStart,
         onIterationComplete = params.onIterationComplete,
         cancelWhen = function()
             -- The cancelWhen function can be set both in params and in the transition config, so we check both to see if at least one is fulfilled.
@@ -84,9 +85,9 @@ local function doExtendedTransition(transitionExtension, target, params)
     local currentTransitionTime = 0
     local totalTransitionTime = 0 -- This is used to get better timing accuracy for transitions that loop over many iterations
     
-    -- Get start/end values from transition implementation
-    local startValue = transitionExtension.getStartValue(target, params)
-    local endValue = transitionExtension.getEndValue(target, params)
+    -- Start/end values will be set every time a new iteration starts
+    local startValue
+    local endValue
     
     -- Create the enter frame listener that will handle the transition and store it on the transition reference
     transitionRef.enterFrameListener = function(event)
@@ -169,8 +170,12 @@ local function doExtendedTransition(transitionExtension, target, params)
                         currentTransitionTime = 0    
                         isReverseCycle = false
                         
+                        -- Make callbacks if callback functions are defined
                         if (transitionRef.onRepeat) then
                             transitionRef.onRepeat(target, params)
+                        end
+                        if (transitionRef.onIterationStart) then
+                            transitionRef.onIterationStart(target, params)
                         end
                         
                         -- If doing reverse transition we must restore some values before starting the next iteration
@@ -200,11 +205,21 @@ local function doExtendedTransition(transitionExtension, target, params)
     
     -- Start transition
     timer.performWithDelay(delay, function()            
-        lastFrameTimestamp = system.getTimer()
-        Runtime:addEventListener("enterFrame", transitionRef.enterFrameListener)
+        -- First make callbacks that might affect params
         if (transitionRef.onStart) then
             transitionRef.onStart(target)
         end
+        if (transitionRef.onIterationStart) then
+            transitionRef.onIterationStart(target, params)
+        end
+        
+        -- Then get the start/end values
+        startValue = transitionExtension.getStartValue(target, params)
+        endValue = transitionExtension.getEndValue(target, params)
+        
+        -- Finally, attach the enter frame listener to allow the transition to start
+        lastFrameTimestamp = system.getTimer()
+        Runtime:addEventListener("enterFrame", transitionRef.enterFrameListener)
     end)
     
     return transitionRef
