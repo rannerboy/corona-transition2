@@ -67,7 +67,7 @@ transition.color(displayObject, {
     -- onIterationStart will be called BEFORE EACH iteration, including the first one.
     -- It will be executed AFTER iterationDelay, just when a new iteration is started.
     -- Like onRepeat, it accepts transition params as a second param, to allow params to be changed between iterations.
-    onIterationComplete = function(target, params) print("onIterationComplete") end,
+    onIterationStart = function(target, params) print("onIterationStart") end,
     
     -- onIterationComplete will be called AFTER EACH iteration, including the last one.
     -- It will be executed BEFORE iterationDelay, just when an iteration is completed.
