@@ -131,10 +131,10 @@ local function doExtendedTransition(transitionExtension, target, params)
             end
             
             -- Pass the next value(s) to the handling function of the transition implementation
-            transitionExtension.onValue(target, params, nextValue)
+            transitionExtension.onValue(target, params, nextValue, isReverseCycle)
         else
             -- Finally, just make sure that we have reached the correct end value
-            transitionExtension.onValue(target, params, transitionRef.endValue)
+            transitionExtension.onValue(target, params, transitionRef.endValue, isReverseCycle)
                            
             -- If transition should be reversed, we reverse it and start over by resetting current transition time
             if (transitionRef.reverse and not isReverseCycle) then
