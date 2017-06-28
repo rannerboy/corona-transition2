@@ -125,7 +125,7 @@ end)
 
 ## Transition functions
 
-TODO: Examples and parameter references will be added later...
+TODO: Examples and parameter references will be added later... For now, view the source code for each transition to see example usage.
 
 ### bounce()
 Bounces a display object.
@@ -135,6 +135,10 @@ Transitions the fill and/or stroke color of a display object smoothly from one c
 
 ### glow()
 A convenience function that uses the color() transition to create a glowing effect.
+
+### moveBungy()
+
+Moves a display object using a "bungy strech" effect in x and/or y direction.
 
 ### moveSine()
 Moves a display object along a sine wave path. Radius can be specified for the x axis, y axis, or both. Combine one moveSine() transition for the x axis with one for the y axis to make your display object move in more complex patterns.
