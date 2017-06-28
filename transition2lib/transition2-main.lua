@@ -11,11 +11,19 @@ local transitionsByTag = {
 }
 
 local function cleanUpTransition(transitionRef)
-    Runtime:removeEventListener("enterFrame", transitionRef.enterFrameListener)
-    -- Unset cross reference
-    transitionRef.target.extTransitions[transitionRef] = nil
-    -- Unset reference in table indexed by tag
-    transitionsByTag[transitionRef.tag][transitionRef] = nil
+    if (transitionRef) then
+        if (transitionRef.enterFrameListener) then
+            Runtime:removeEventListener("enterFrame", transitionRef.enterFrameListener)
+        end
+        -- Unset cross reference
+        if (transitionRef.target) then
+            transitionRef.target.extTransitions[transitionRef] = nil
+        end
+        -- Unset reference in table indexed by tag
+        if (transitionsByTag[transitionRef.tag]) then
+            transitionsByTag[transitionRef.tag][transitionRef] = nil
+        end
+    end
 end
 
 local function doExtendedTransition(transitionExtension, target, params)
