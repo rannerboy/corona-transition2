@@ -31,19 +31,16 @@ local function doExtendedTransition(transitionExtension, target, params)
     -- Override params
     params = transitionExtension.getParams and transitionExtension.getParams(target, params) or params
     
-    -- Get parameter values and set some default values
-    local targetTransitionTime = params.time or 500
-    local delay = params.delay or 0
-    local iterationDelay = params.iterationDelay or 0    
-    local tag = params.tag or "untagged"    
-    local iterations = params.iterations or 1     
-    local reverse = transitionExtension.reverse or params.reverse or false    
-    
     -- Create a new transition reference to that will be returned from the transition extension function
-    -- This reference holds a lot of transition state and will be used to uniquely identify the transition
+    -- This reference holds a the entire config (and some state) for a transition and will be used to uniquely identify each transition
     local transitionRef = {
         isExtendedTransition = true, -- To be checked by pause/resume/cancel
-        tag = tag,
+        time = params.time or 500,        
+        delay = params.delay or 0,
+        iterations = params.iterations or 1,
+        iterationDelay = params.iterationDelay or 0,
+        tag = params.tag or "untagged",
+        reverse = transitionExtension.reverse or params.reverse or false,
         enterFrameListener = nil, -- Will be set further down
         isPaused = false, -- Can be flipped by calling transition.pause() and transition.resume()
         target = target,
@@ -75,8 +72,8 @@ local function doExtendedTransition(transitionExtension, target, params)
     target.extTransitions[transitionRef] = true
     
     -- Save transition reference in table indexed by tag
-    transitionsByTag[tag] = transitionsByTag[tag] or {}
-    transitionsByTag[tag][transitionRef] = true    
+    transitionsByTag[transitionRef.tag] = transitionsByTag[transitionRef.tag] or {}
+    transitionsByTag[transitionRef.tag][transitionRef] = true    
     
     -- Keep track of which iteration is currently running
     local currentIteration = 1
@@ -115,10 +112,10 @@ local function doExtendedTransition(transitionExtension, target, params)
         
         -- We must do slightly different timing calculations depending on if transition reverse is activated or not
         local isTransitionDone = false
-        if (reverse) then
-            isTransitionDone = totalTransitionTime >= ((currentIteration * targetTransitionTime * 2) - (isReverseCycle and 0 or targetTransitionTime))
+        if (transitionRef.reverse) then
+            isTransitionDone = totalTransitionTime >= ((currentIteration * transitionRef.time * 2) - (isReverseCycle and 0 or transitionRef.time))
         else
-            isTransitionDone = totalTransitionTime >= (currentIteration * targetTransitionTime)
+            isTransitionDone = totalTransitionTime >= (currentIteration * transitionRef.time)
         end
         
         if (not isTransitionDone) then            
@@ -127,10 +124,10 @@ local function doExtendedTransition(transitionExtension, target, params)
             if (type(transitionRef.startValue) == "table") then
                 nextValue = {}
                 for k, v in pairs(transitionRef.startValue) do
-                    nextValue[k] = transitionRef.easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
+                    nextValue[k] = transitionRef.easingFunc(currentTransitionTime, transitionRef.time, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
                 end
             else 
-                nextValue = transitionRef.easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
+                nextValue = transitionRef.easingFunc(currentTransitionTime, transitionRef.time, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
             end
             
             -- Pass the next value(s) to the handling function of the transition implementation
@@ -140,7 +137,7 @@ local function doExtendedTransition(transitionExtension, target, params)
             transitionExtension.onValue(target, params, transitionRef.endValue)
                            
             -- If transition should be reversed, we reverse it and start over by resetting current transition time
-            if (reverse and not isReverseCycle) then
+            if (transitionRef.reverse and not isReverseCycle) then
                 isReverseCycle = true
                 transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
                 transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
@@ -154,7 +151,7 @@ local function doExtendedTransition(transitionExtension, target, params)
                 
                 -- Check if we are done with our iterations
                 -- Note! iterations == 0 means endless iterations
-                if ((iterations > 0) and (currentIteration >= iterations)) then
+                if ((transitionRef.iterations > 0) and (currentIteration >= transitionRef.iterations)) then
                     
                     cleanUpTransition(transitionRef)
                     
@@ -178,7 +175,7 @@ local function doExtendedTransition(transitionExtension, target, params)
                         end
                         
                         -- If doing reverse transition we must restore some values before starting the next iteration
-                        if (reverse) then
+                        if (transitionRef.reverse) then
                             -- Note that we must call getStartValue and getEndValue here in case onRepeat or onIterationComplete have modified params
                             transitionRef.startValue = transitionExtension.getStartValue(target, params)
                             transitionRef.endValue = transitionExtension.getEndValue(target, params)
@@ -188,9 +185,9 @@ local function doExtendedTransition(transitionExtension, target, params)
                     end
                                         
                     -- Delay start of next generation is specified in params
-                    if (iterationDelay and iterationDelay > 0) then
+                    if (transitionRef.iterationDelay and transitionRef.iterationDelay > 0) then
                         transitionRef.isPaused = true
-                        timer.performWithDelay(iterationDelay, function()
+                        timer.performWithDelay(transitionRef.iterationDelay, function()
                             transitionRef.isPaused = false
                             startNextIteration()
                         end)
@@ -203,7 +200,7 @@ local function doExtendedTransition(transitionExtension, target, params)
     end
     
     -- Start transition
-    timer.performWithDelay(delay, function()            
+    timer.performWithDelay(transitionRef.delay, function()            
         -- First make callbacks that might affect params
         if (transitionRef.onStart) then
             transitionRef.onStart(target)
