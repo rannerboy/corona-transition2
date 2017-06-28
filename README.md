@@ -141,22 +141,75 @@ transition.bounce(rect, {
 ### color()
 Transitions the fill and/or stroke color of a display object smoothly from one color to another.
 
+```lua
+transition.color(displayObject, {
+    startColor = {1, 1, 0, 1}, -- Yellow
+    endColor = {1, 0, 0, 1}, -- Red
+    time = 500,
+    stroke = true, -- Enable stroke color fade
+    fill = false, -- Disable fill color fade
+    reverse = true, -- Will fade back from endColor to startColor when done
+    iterations = 0, -- Repeat forever    
+})
+```
+
 ### glow()
 A convenience function that uses the color() transition to create a glowing effect.
 
-### moveBungy()
+```lua
+transition.glow(displayObject, {
+    startColor = {1, 1, 0, 1}, -- Yellow
+    endColor = {1, 0, 0, 1}, -- Red
+    time = 1000,
+    stroke = true, -- Enable stroke color glow
+    fill = false, -- Disable fill color glow
+})
+```
 
+### moveBungy()
 Moves a display object using a "bungy strech" effect in x and/or y direction.
+
+```lua
+transition.moveBungy(coronaLogo, {
+    time = 750,
+    offsetY = 200,
+    offsetX = 0,    
+    iterations = 0,    
+    iterationDelay = 100,
+})
+```
 
 ### moveSine()
 Moves a display object along a sine wave path. Radius can be specified for the x axis, y axis, or both. Combine one moveSine() transition for the x axis with one for the y axis to make your display object move in more complex patterns.
+
+```lua
+transition.moveSine(displayObject, {
+    radiusX = 400,
+    radiusY = 200,
+    time = 5000,
+    startDegreesX = 180,
+    startDegreesY = 90,
+})
+```
 
 ### zRotate()
 Rotates a display object in the z dimension, either horizontally or vertically.
 Requires the target display object to have a path with four nodes ((x1, y1), ..., (x4, y4)), like images and rects.
 
-## Creating custom transitions
+```lua
+transition.zRotate(displayObject, {
+    degrees = 360,
+    time = 2000,
+    iterations = 0,    
+    transition = easing.inOutSine,
+    reverse = true,  
+    perspective = 0.25, -- A value between 0-1. Defaults to 0.5.
+    horizontal = true, -- Set to true for horizontal rotation (around the y axis). Default is vertical rotation (around the x axis)
+    disableStrokeScaling = true, -- Set to true to disable scaling of strokes. Defaults is false, i.e. strokes are scaled.
+})
+```
 
+## Creating custom transitions
 To implement your own custom transition, see **transition2-template.lua** and already implemented transitions like **transition2-color.lua** and **transition2-bounce.lua**.
 
 Then expose your transition function by including it in **transition2.lua**.
