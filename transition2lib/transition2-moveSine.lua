@@ -37,7 +37,7 @@ return {
         }
     end,
 
-    onValue = function(displayObject, params, value)
+    onValue = function(displayObject, params, value, isReverseCycle)
         local degrees = value        
         
         if (params.radiusX ~= 0) then

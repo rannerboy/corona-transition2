@@ -16,10 +16,12 @@ return {
 
     --[[
     @param target The target object for the transition, for example a display object
+    @param params The transition params
     @param value Will have the same format that is returned from getStartValue() and getEndValue(), i.e. a single numeric value or a table of numeric values
-    This function will be called for each new interpolated value during the transition. This is where you can modify your target object by setting properties or calling methods.
+    This function will be called for each new interpolated value during the transition. This is where you can modify your target object by setting properties or calling methods.    
+    @param isReverseCycle true if transition is currently running in reverse cycle, false otherwise. Makes it possible to create different target behavior for normal/reverse part of transition cycle.
     --]]
-    onValue = function(target, params, value)        
+    onValue = function(target, params, value, isReverseCycle)        
     end,
  
     --[[

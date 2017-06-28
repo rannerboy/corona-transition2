@@ -24,7 +24,7 @@ return {
         return displayObject.y - params.height
     end,
 
-    onValue = function(displayObject, params, value)
+    onValue = function(displayObject, params, value, isReverseCycle)
         displayObject.y = value
     end,
  

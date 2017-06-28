@@ -40,7 +40,7 @@ return {
         return params.degrees
     end,
 
-    onValue = function(target, params, value)            
+    onValue = function(target, params, value, isReverseCycle)            
         local radians = toRadians(value)
         
         if (params.horizontal) then            

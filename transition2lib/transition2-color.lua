@@ -29,7 +29,7 @@ return {
         return params.endColor
     end,
 
-    onValue = function(displayObject, params, value)
+    onValue = function(displayObject, params, value, isReverseCycle)
         -- Stroke and fill can be disabled separately, but are enabled by default
         local enableStroke = (params.stroke == nil) and true or params.stroke
         local enableFill = (params.fill == nil) and true or params.fill
