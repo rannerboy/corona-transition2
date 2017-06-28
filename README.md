@@ -125,7 +125,7 @@ end)
 
 ## Transition functions
 
-TODO: Full parameter references will be added later... For now, see the examples or view the source code for each transition for details. All examples assumes that you've overriden the default transition library through:
+TODO: Full parameter references will be added later... For now, see the examples or view the source code for each transition for details. All examples assume that you've overriden the default transition library through:
 
 ```lua
 local transition = require("transition2")
