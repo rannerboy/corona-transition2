@@ -125,7 +125,11 @@ end)
 
 ## Transition functions
 
-TODO: Full parameter references will be added later... For now, see the examples or view the source code for each transition for details.
+TODO: Full parameter references will be added later... For now, see the examples or view the source code for each transition for details. All examples assumes that you've overriden the default transition library through:
+
+```lua
+local transition = require("transition2")
+```
 
 ### bounce()
 Bounces a display object.
