@@ -50,7 +50,10 @@ transition.color(displayObject, {
     
     -- onRepeat will be called BETWEEN EACH iteration, except for the last one.
     -- It will be exectued AFTER iterationDelay, just when a new iteration is started.
-    onRepeat = function(target) print("onRepeat") end,    
+    --
+    -- Accepts transition params as a second param, to allow params to be changed between iterations.
+    -- Note that only transition specific params can (or should) be changed this way. For example, changing params.time will have no effect.
+    onRepeat = function(target, params) print("onRepeat") end,    
     
     --[[
     
@@ -61,9 +64,15 @@ transition.color(displayObject, {
     -- iterationDelay will only occur between iterations, i.e. not before the first iteration or after the last iteration.
     iterationDelay = 500,
     
+    -- onIterationStart will be called BEFORE EACH iteration, including the first one.
+    -- It will be executed AFTER iterationDelay, just when a new iteration is started.
+    -- Like onRepeat, it accepts transition params as a second param, to allow params to be changed between iterations.
+    onIterationComplete = function(target, params) print("onIterationComplete") end,
+    
     -- onIterationComplete will be called AFTER EACH iteration, including the last one.
     -- It will be executed BEFORE iterationDelay, just when an iteration is completed.
-    onIterationComplete = function(target) print("onIterationComplete") end,
+    -- Like onRepeat and onIterationStart, it accepts transition params as a second param, to allow params to be changed between iterations.
+    onIterationComplete = function(target, params) print("onIterationComplete") end,
     
     -- Setting reverse = true makes the transition reverse back to its start value after the end value is reached
     reverse = true,
