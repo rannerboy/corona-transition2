@@ -49,6 +49,9 @@ local function doExtendedTransition(transitionExtension, target, params)
         enterFrameListener = nil, -- Will be set further down
         isPaused = false, -- Can be flipped by calling transition.pause() and transition.resume()
         target = target,
+        -- Start/end values will be set every time a new iteration starts
+        startValue = nil,
+        endValue = nil,
         onComplete = params.onComplete,
         onStart = params.onStart,
         onPause = params.onPause,
@@ -84,10 +87,6 @@ local function doExtendedTransition(transitionExtension, target, params)
     local lastFrameTimestamp = nil -- This will not be set until transition is actually started, after a possible delay 
     local currentTransitionTime = 0
     local totalTransitionTime = 0 -- This is used to get better timing accuracy for transitions that loop over many iterations
-    
-    -- Start/end values will be set every time a new iteration starts
-    local startValue
-    local endValue
     
     -- Create the enter frame listener that will handle the transition and store it on the transition reference
     transitionRef.enterFrameListener = function(event)
@@ -125,25 +124,25 @@ local function doExtendedTransition(transitionExtension, target, params)
         if (not isTransitionDone) then            
             -- Make sure to handle table values as well as single numeric values
             local nextValue = nil
-            if (type(startValue) == "table") then
+            if (type(transitionRef.startValue) == "table") then
                 nextValue = {}
-                for k, v in pairs(startValue) do
-                    nextValue[k] = easingFunc(currentTransitionTime, targetTransitionTime, startValue[k], endValue[k] - startValue[k])
+                for k, v in pairs(transitionRef.startValue) do
+                    nextValue[k] = easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
                 end
             else 
-                nextValue = easingFunc(currentTransitionTime, targetTransitionTime, startValue, endValue - startValue)
+                nextValue = easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
             end
             
             -- Pass the next value(s) to the handling function of the transition implementation
             transitionExtension.onValue(target, params, nextValue)
         else
             -- Finally, just make sure that we have reached the correct end value
-            transitionExtension.onValue(target, params, endValue)
+            transitionExtension.onValue(target, params, transitionRef.endValue)
                            
             -- If transition should be reversed, we reverse it and start over by resetting current transition time
             if (reverse and not isReverseCycle) then
                 isReverseCycle = true
-                startValue, endValue = endValue, startValue
+                transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
                 easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
                 currentTransitionTime = 0
             else      
@@ -181,8 +180,8 @@ local function doExtendedTransition(transitionExtension, target, params)
                         -- If doing reverse transition we must restore some values before starting the next iteration
                         if (reverse) then
                             -- Note that we must call getStartValue and getEndValue here in case onRepeat or onIterationComplete have modified params
-                            startValue = transitionExtension.getStartValue(target, params)
-                            endValue = transitionExtension.getEndValue(target, params)
+                            transitionRef.startValue = transitionExtension.getStartValue(target, params)
+                            transitionRef.endValue = transitionExtension.getEndValue(target, params)
                             
                             easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
                         end
@@ -214,8 +213,8 @@ local function doExtendedTransition(transitionExtension, target, params)
         end
         
         -- Then get the start/end values
-        startValue = transitionExtension.getStartValue(target, params)
-        endValue = transitionExtension.getEndValue(target, params)
+        transitionRef.startValue = transitionExtension.getStartValue(target, params)
+        transitionRef.endValue = transitionExtension.getEndValue(target, params)
         
         -- Finally, attach the enter frame listener to allow the transition to start
         lastFrameTimestamp = system.getTimer()
