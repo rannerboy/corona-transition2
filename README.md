@@ -135,7 +135,7 @@ local transition = require("transition2")
 Bounces a display object.
 
 ```lua
-transition.bounce(rect, { 
+transition.bounce(displayObject, { 
     height = 400, -- Set to negative value to bounce downwards
     time = 1000,        
     iterations = 0,
@@ -174,7 +174,7 @@ transition.glow(displayObject, {
 Moves a display object using a "bungy strech" effect in x and/or y direction.
 
 ```lua
-transition.moveBungy(coronaLogo, {
+transition.moveBungy(displayObject, {
     time = 750,
     offsetY = 200,
     offsetX = 0,    
