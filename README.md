@@ -125,7 +125,7 @@ end)
 
 ## Transition functions
 
-TODO: Examples and parameter references will be added later...
+TODO: Examples and parameter references will be added later... For now, view the source code for each transition to see example usage.
 
 ### bounce()
 Bounces a display object.
