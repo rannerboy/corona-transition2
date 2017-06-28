@@ -66,8 +66,8 @@ return {
         return params
     end,
     
-    cancelWhen = function(target, params)
+    cancelWhen = function(displayObject, params)
         -- This will cancel the transition if the display object no longer has x and y values
-        return target.x == nil or target.y == nil
+        return displayObject.x == nil or displayObject.y == nil
     end
 }

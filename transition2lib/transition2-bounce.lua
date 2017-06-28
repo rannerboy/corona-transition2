@@ -37,5 +37,10 @@ return {
         params.time = (params.time ~= nil) and (params.time/2) or 500
         
         return params
+    end,
+    
+    cancelWhen = function(displayObject, params)
+        -- This will cancel the transition if the display object no longer has x and y values
+        return displayObject.x == nil or displayObject.y == nil
     end
 }
