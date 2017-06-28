@@ -88,9 +88,27 @@ return {
     end,
  
     getParams = function(displayObject, params)        
+        params.time = (params.time ~= nil) and (params.time/2) or 500
         params.transition = easing.outBack
         params.transitionReverse = easing.outBack
         params.reverse = true        
+        
+        -- After each iteration we move the entire display object and reset the offset for the path nodes.
+        -- By doing this we have better control of where the entire display object is after the transision is complete.
+        local customOnIterationComplete = params.onIterationComplete
+        params.onIterationComplete = function(displayObject)
+            displayObject.x = displayObject.x + (params.offsetX or 0)
+            displayObject.y = displayObject.y + (params.offsetY or 0)
+            
+            for i = 1, 4 do
+                displayObject.path["y" .. i] = 0
+                displayObject.path["x" .. i] = 0
+            end
+            
+            if(customOnIterationComplete) then
+                customOnIterationComplete(displayObject)
+            end
+        end
         return params
     end,
     
