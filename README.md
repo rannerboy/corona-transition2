@@ -6,6 +6,12 @@ The current documentation is very brief. Have a look at the source code for bett
 
 **NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**.
 
+## Important note
+
+Please note that transition2 is work in progress. There might be bugs, performance can likely be improved, and the number of new transition functions to choose from is still very limited.
+
+Just grab the source code as is and make your own modifications if you need to. I'd be really happy for any feedback, especially in case you run into any bugs or other problems. And if you decide to implement your own custom transition function it would be awesome if you want to share it so I can make it part of the default transition2 library!
+
 ## Basic usage
 
 ```lua
