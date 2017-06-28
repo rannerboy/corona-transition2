@@ -28,6 +28,11 @@ end
 
 local function doExtendedTransition(transitionExtension, target, params)
     
+    -- Just fail silently if the target object is not a table
+    if ((target == nil) or (type(target) ~= "table")) then        
+        return false
+    end
+    
     -- Override params
     params = transitionExtension.getParams and transitionExtension.getParams(target, params) or params
     
