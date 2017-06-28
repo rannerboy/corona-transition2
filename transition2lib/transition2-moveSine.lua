@@ -64,5 +64,10 @@ return {
         params.radiusY = params.radiusY or 0
  
         return params
+    end,
+    
+    cancelWhen = function(target, params)
+        -- This will cancel the transition if the display object no longer has x and y values
+        return target.x == nil or target.y == nil
     end
 }
