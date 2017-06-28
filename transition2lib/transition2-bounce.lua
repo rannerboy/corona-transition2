@@ -6,7 +6,7 @@ Example usage:
 
 local transition = require("transition2")
 
-transition.bounce(rect, { 
+transition.bounce(displayObject, { 
     height = 400, -- Set to negative value to bounce downwards
     time = 1000,        
     iterations = 0,

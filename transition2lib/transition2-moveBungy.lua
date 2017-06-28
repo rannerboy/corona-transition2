@@ -6,7 +6,7 @@ Example usage:
 
 local transition = require("transition2")
 
-transition.moveBungy(coronaLogo, {
+transition.moveBungy(displayObject, {
     time = 750,
     offsetY = 200,
     offsetX = 0,    
