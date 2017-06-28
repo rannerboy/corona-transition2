@@ -87,7 +87,7 @@ local function doExtendedTransition(transitionExtension, target, params)
     -- Get start/end values from transition implementation
     local startValue = transitionExtension.getStartValue(target, params)
     local endValue = transitionExtension.getEndValue(target, params)
-            
+    
     -- Create the enter frame listener that will handle the transition and store it on the transition reference
     transitionRef.enterFrameListener = function(event)
         -- Automatically cancel the transition if some conditions have been met
@@ -121,7 +121,7 @@ local function doExtendedTransition(transitionExtension, target, params)
             isTransitionDone = totalTransitionTime >= (currentIteration * targetTransitionTime)
         end
         
-        if (not isTransitionDone) then
+        if (not isTransitionDone) then            
             -- Make sure to handle table values as well as single numeric values
             local nextValue = nil
             if (type(startValue) == "table") then
@@ -149,7 +149,7 @@ local function doExtendedTransition(transitionExtension, target, params)
                 -- Make a callback at the end of each iteration
                 -- This is not the same as onRepeat. onIterationComplete will be called at the end of EACH iteration, and before any iterationDelay.
                 if (transitionRef.onIterationComplete) then
-                    transitionRef.onIterationComplete(target)
+                    transitionRef.onIterationComplete(target, params)
                 end
                 
                 -- Check if we are done with our iterations
@@ -169,14 +169,17 @@ local function doExtendedTransition(transitionExtension, target, params)
                         currentTransitionTime = 0    
                         isReverseCycle = false
                         
-                        -- If doing reverse transition we must restore some values before starting the next iteration
-                        if (reverse) then
-                            startValue, endValue = endValue, startValue
-                            easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
+                        if (transitionRef.onRepeat) then
+                            transitionRef.onRepeat(target, params)
                         end
                         
-                        if (transitionRef.onRepeat) then
-                            transitionRef.onRepeat(target)
+                        -- If doing reverse transition we must restore some values before starting the next iteration
+                        if (reverse) then
+                            -- Note that we must call getStartValue and getEndValue here in case onRepeat or onIterationComplete have modified params
+                            startValue = transitionExtension.getStartValue(target, params)
+                            endValue = transitionExtension.getEndValue(target, params)
+                            
+                            easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
                         end
                     end
                                         
