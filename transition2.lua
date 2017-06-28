@@ -18,8 +18,8 @@ return transition2({
     color = require("transition2lib.transition2-color"),
     bounce = require("transition2lib.transition2-bounce"),
     moveSine = require("transition2lib.transition2-moveSine"),   
+    moveBungy = require("transition2lib.transition2-moveBungy"),   
     zRotate = require("transition2lib.transition2-zRotate"),
-    bungy = require("transition2lib.transition2-bungy"),
     
     -- Convenience functions (specialized versions of transitions)
     glow = require("transition2lib.transition2-glow"),       

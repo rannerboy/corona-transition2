@@ -1,20 +1,25 @@
 --[[
 
+Moves a display object using a "bungy strech" effect.
+
 Example usage:
 
 local transition = require("transition2")
 
-TODO:
-
-transition.bungy(displayObject, {
-    time = 5000,
-    iterations = 0,
+transition.moveBungy(coronaLogo, {
+    time = 750,
+    offsetY = 200,
+    offsetX = 0,    
+    iterations = 0,    
+    iterationDelay = 100,
+    
+    -- Note! reverse has no effect since it is already used internally to create the bungy effect
+    reverse = true,
 })
 
 Markus Ranner 2017
 
 --]]
-
 local function toRadians(degrees)
     return ((degrees % 360) * math.pi / 180)
 end
