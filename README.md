@@ -125,10 +125,18 @@ end)
 
 ## Transition functions
 
-TODO: Examples and parameter references will be added later... For now, view the source code for each transition to see example usage.
+TODO: Full parameter references will be added later... For now, see the examples or view the source code for each transition for details.
 
 ### bounce()
 Bounces a display object.
+
+```lua
+transition.bounce(rect, { 
+    height = 400, -- Set to negative value to bounce downwards
+    time = 1000,        
+    iterations = 0,
+})
+```
 
 ### color()
 Transitions the fill and/or stroke color of a display object smoothly from one color to another.
