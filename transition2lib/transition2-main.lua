@@ -34,15 +34,13 @@ local function doExtendedTransition(transitionExtension, target, params)
     -- Get parameter values and set some default values
     local targetTransitionTime = params.time or 500
     local delay = params.delay or 0
-    local iterationDelay = params.iterationDelay or 0
-    local easingFunc = params.transition or easing.linear            
-    local easingReverseFunc = params.transitionReverse or easingFunc
+    local iterationDelay = params.iterationDelay or 0    
     local tag = params.tag or "untagged"    
     local iterations = params.iterations or 1     
     local reverse = transitionExtension.reverse or params.reverse or false    
     
-    -- Create a new transition reference that will be returned from the transition extension function
-    -- This reference will be used to uniquely identify the transition
+    -- Create a new transition reference to that will be returned from the transition extension function
+    -- This reference holds a lot of transition state and will be used to uniquely identify the transition
     local transitionRef = {
         isExtendedTransition = true, -- To be checked by pause/resume/cancel
         tag = tag,
@@ -52,6 +50,8 @@ local function doExtendedTransition(transitionExtension, target, params)
         -- Start/end values will be set every time a new iteration starts
         startValue = nil,
         endValue = nil,
+        easingFunc = params.transition or easing.linear,
+        easingReverseFunc = params.transitionReverse or params.transition or easing.linear,
         onComplete = params.onComplete,
         onStart = params.onStart,
         onPause = params.onPause,
@@ -127,10 +127,10 @@ local function doExtendedTransition(transitionExtension, target, params)
             if (type(transitionRef.startValue) == "table") then
                 nextValue = {}
                 for k, v in pairs(transitionRef.startValue) do
-                    nextValue[k] = easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
+                    nextValue[k] = transitionRef.easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
                 end
             else 
-                nextValue = easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
+                nextValue = transitionRef.easingFunc(currentTransitionTime, targetTransitionTime, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
             end
             
             -- Pass the next value(s) to the handling function of the transition implementation
@@ -143,7 +143,7 @@ local function doExtendedTransition(transitionExtension, target, params)
             if (reverse and not isReverseCycle) then
                 isReverseCycle = true
                 transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
-                easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
+                transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
                 currentTransitionTime = 0
             else      
                 -- Make a callback at the end of each iteration
@@ -183,7 +183,7 @@ local function doExtendedTransition(transitionExtension, target, params)
                             transitionRef.startValue = transitionExtension.getStartValue(target, params)
                             transitionRef.endValue = transitionExtension.getEndValue(target, params)
                             
-                            easingFunc, easingReverseFunc = easingReverseFunc, easingFunc
+                            transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
                         end
                     end
                                         
