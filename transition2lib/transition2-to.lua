@@ -31,7 +31,14 @@ return {
         -- For rect paths, the (x1,y1)...(x4,y4) are also possible to change
         if (utils.isRectPath(displayObject)) then
             for i = 1, 4 do
-                
+                local xi = "x" .. i
+                if (params[xi]) then
+                    startValue[xi] = displayObject.path[xi]
+                end
+                local yi = "y" .. i
+                if (params[yi]) then
+                    startValue[yi] = displayObject.path[yi]
+                end
             end
         end
         
@@ -48,12 +55,42 @@ return {
             end
         end
         
+        -- For rect paths, the (x1,y1)...(x4,y4) are also possible to change
+        if (utils.isRectPath(displayObject)) then
+            for i = 1, 4 do
+                local xi = "x" .. i
+                if (params[xi]) then
+                    endValue[xi] = (params.delta and (displayObject.path[xi] + params[xi]) or params[xi])
+                end
+                local yi = "y" .. i
+                if (params[yi]) then
+                    endValue[yi] = (params.delta and (displayObject.path[yi] + params[yi]) or params[yi])
+                end
+            end
+        end
+        
         return endValue        
     end,
 
     onValue = function(displayObject, params, value, isReverseCycle)
-        for propName, propValue in pairs(value) do
-            displayObject[propName] = propValue
+        -- First, apply simple props to display object
+        for i = 1, #SIMPLE_PROPS do
+            local propName = SIMPLE_PROPS[i]
+            if (value[propName] ~= nil) then
+                displayObject[propName] = value[propName]
+            end
+        end
+        
+        -- Then handle the path nodes
+        for i = 1, 4 do
+            local xi = "x" .. i
+            if (value[xi] ~= nil) then
+                displayObject.path[xi] = value[xi]
+            end
+            local yi = "y" .. i
+            if (value[yi] ~= nil) then
+                displayObject.path[yi] = value[yi]
+            end
         end
     end,
  
