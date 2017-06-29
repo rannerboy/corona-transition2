@@ -129,11 +129,11 @@ end)
 ## Overridden transition functions
 The following functions overrides the transition functions of the original transition library. The goal is for each of them to behave exactly like the corresponding function in the transition library and offer the same list of parameters. That way, the transition library can be exchanged with transition2 without any code changes.
 
-The reason for overriding instead of just forwarding the function calls is that the overridden functions can be equipped with additional functionality.
+The reason for overriding instead of just forwarding the function calls is that the overriding functions can be equipped with additional functionality.
 
-Each overridden function will in addition to its usual parameters also offer the transition2 specific parameters listed in the basic usage example above. For example: reverse, transitionReverse, onIterationStart and onIterationComplete.
+Each overriding function will in addition to the overridden function's parameters also offer the transition2 specific parameters listed in the basic usage example above. For example, when calling transition.to() you'll be able to use parameters like reverse, transitionReverse, onIterationStart and onIterationComplete.
 
-The overridden functions also implement automatic transition cancelling. For example, each to() transition for a display object will be cancelled as soon as the display object has been removed. No need to keep track of transition refs and cancel them manually!
+The overriding functions also implement automatic transition cancelling. For example, each to() transition for a display object will be cancelled as soon as the display object has been removed. No need to keep track of transition refs and cancel them manually!
 
 This auto-cancel functionality can easily be verified like this:
 
