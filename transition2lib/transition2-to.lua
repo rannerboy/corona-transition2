@@ -13,6 +13,10 @@ Number. Applicable only if the target is a fill.effect applied to a ShapeObject.
 
 local utils = require("utils")
 
+local function isFillEffect(target)
+    return type(target) == "userdata"
+end
+
 local SIMPLE_PROPS = { "x", "y", "rotation", "alpha", "xScale", "yScale", "width", "height", "size" }
 local RECT_PATH_PROPS = { "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4" }
 
@@ -20,7 +24,15 @@ return {
     getStartValue = function(target, params)
         local startValue = {}
                 
-        if (utils.isRectPath(target)) then            
+        if (isFillEffect(target)) then
+            -- For fill effects, we accept any numeric params since they may differ a lot between effects           
+            -- FIXME: Should exclude time, delay and other numeric params here
+            for propName, propValue in pairs(params) do
+                if (type(propValue) == "number") then
+                    startValue[propName] = target[propName]
+                end
+            end
+        elseif (utils.isRectPath(target)) then            
             -- For rect paths, we check only the (x1,y1)...(x4,y4) props
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
@@ -38,15 +50,26 @@ return {
                 end
             end
         end
-
+        
+        for k,v in pairs(startValue) do
+            print("startValue[" .. k .. "] = " .. tostring(v))
+        end
         
         return startValue
     end,
 
     getEndValue = function(target, params)
         local endValue = {}
-                
-        if (utils.isRectPath(target)) then
+        
+        if (isFillEffect(target)) then
+            -- For fill effects, we accept any numeric params since they may differ a lot between effects           
+            -- FIXME: Should exclude time, delay and other numeric params here
+            for propName, propValue in pairs(params) do
+                if (type(propValue) == "number") then
+                    endValue[propName] = (params.delta and ((target[propName] or 0) + propValue) or propValue)
+                end
+            end
+        elseif (utils.isRectPath(target)) then
             -- For rect paths, we only check the (x1,y1)...(x4,y4) props
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
@@ -62,6 +85,10 @@ return {
                     endValue[propName] = (params.delta and ((target[propName] or 0) + params[propName]) or params[propName])
                 end
             end
+        end
+        
+        for k,v in pairs(endValue) do
+            print("endValue[" .. k .. "] = " .. tostring(v))
         end
         
         return endValue        
@@ -82,9 +109,11 @@ return {
     end,
     
     cancelWhen = function(target, params)
+        -- TODO: Is there any way to know if a fill effect is no longer valid so that we can auto-cancel transition?
+        
         if (utils.isRectPath(target)) then
             return target.x1 == nil
-        else
+        elseif (not isFillEffect(target)) then
             return target.x == nil
         end
     end
