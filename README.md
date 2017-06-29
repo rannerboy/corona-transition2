@@ -16,9 +16,9 @@ Require transition2 into a local variable to have full control of which transiti
 
 ```lua
 -- In some Lua file:
-local transition = require("transition2")
-transition.to(...)
-transition.moveSine(...)
+local transition2 = require("transition2")
+transition2.to(...)
+transition2.moveSine(...)
 
 -- In another Lua file
 transition.to(...) --> Will call original transition library
