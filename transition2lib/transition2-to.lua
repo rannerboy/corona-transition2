@@ -1,15 +1,11 @@
 --[[
 
-TODO: doc
+Overrides the default transition.to() function
 
 Markus Ranner 2017
 
 --]]
 
---[[
-[filterParameter] (optional)
-Number. Applicable only if the target is a fill.effect applied to a ShapeObject. In this case, [filterParameter] indicates an effect property associated with the specific filter effect, for example ShapeObject.fill.effect.intensity. See the Filters, Generators, Composites guide for which filter parameters apply to each filter.
---]]
 
 local utils = require("utils")
 
@@ -29,7 +25,7 @@ return {
             -- FIXME: Should exclude time, delay and other numeric params here
             for propName, propValue in pairs(params) do
                 if (type(propValue) == "number") then
-                    startValue[propName] = target[propName]
+                    startValue[propName] = target[propName] or 0
                 end
             end
         elseif (utils.isRectPath(target)) then            
@@ -51,10 +47,11 @@ return {
             end
         end
         
+        --[[
         for k,v in pairs(startValue) do
             print("startValue[" .. k .. "] = " .. tostring(v))
         end
-        
+        --]]
         return startValue
     end,
 
@@ -87,9 +84,11 @@ return {
             end
         end
         
+        --[[
         for k,v in pairs(endValue) do
             print("endValue[" .. k .. "] = " .. tostring(v))
         end
+        --]]
         
         return endValue        
     end,
