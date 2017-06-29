@@ -16,13 +16,16 @@ package.path = package.path .. ";./?.lua;./transition2lib/?.lua;"
 local transition2 = require("transition2-main")
 
 return transition2({        
-    -- Transition functions
+    -- New transition functions
     color = require("transition2-color"),
     bounce = require("transition2-bounce"),
     moveSine = require("transition2-moveSine"),   
     moveBungy = require("transition2-moveBungy"),   
     zRotate = require("transition2-zRotate"),
+    
+    -- Overriden default transition library functions
     blink = require("transition2-blink"),
+    to = require("transition2-to"),
     
     -- Convenience functions (specialized versions of transitions)
     glow = require("transition2-glow"),       
