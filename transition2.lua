@@ -26,17 +26,7 @@ return transition2({
     -- Convenience functions (specialized versions of transitions)
     glow = require("transition2-glow"),  
     
-    -- Overriden transition library functions
+    -- Overridden transition library functions
     blink = require("transition2-blink"),
     to = require("transition2-to"),
-    
-    -- Functions that are just forwarded to the original transition library
-    from = transition.from,
-    dissolve = transition.dissolve,
-    fadeIn = transition.fadeIn,
-    fadeOut = transition.fadeOut,
-    moveBy = transition.moveBy,
-    moveTo = transition.moveTo,
-    scaleBy = transition.scaleBy,
-    scaleTo = transition.scaleTo,
 })

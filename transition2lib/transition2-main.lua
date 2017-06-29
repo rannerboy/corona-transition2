@@ -3,7 +3,11 @@ This is the main algorithm for the transition2 library.
 
 Markus Ranner 2017
 --]]
+
+-- The transition2 module that will be populated with functions
 local transition2 = {}
+-- Override the global transition with a local reference. This is done to avoid endless recursion in case the global transition is changed to point to transition2 (transition = require("transition2"))
+local transition = transition
 
 -- Keep a table of references to all ongoing extended transitions, grouped by tag to make it easy to pause/resume/cancel all transitions for a specific tag
 local transitionsByTag = {
@@ -336,6 +340,16 @@ return function(config)
             end
         end
     end
-        
+       
+    -- Functions that are just forwarded to the original transition library
+    transition2.from = transition.from
+    transition2.dissolve = transition.dissolve
+    transition2.fadeIn = transition.fadeIn
+    transition2.fadeOut = transition.fadeOut
+    transition2.moveBy = transition.moveBy
+    transition2.moveTo = transition.moveTo
+    transition2.scaleBy = transition.scaleBy
+    transition2.scaleTo = transition.scaleTo
+      
     return transition2
 end
