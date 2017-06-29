@@ -25,7 +25,7 @@ transition.moveSine(...) --> ERROR: Undefined function moveSine
 -- I think you get the picture...
 ```
 
-Or, if you're a daredevil, just override the global transition variable in your **main.lua** to run every single transitions through transition2 and hope for the best. :-)
+Or, if you're a daredevil, just override the global transition variable in your **main.lua** to run every single transition through transition2 and hope for the best. :-)
 
 ```lua
 transition = require("transition2")
