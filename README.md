@@ -13,22 +13,29 @@ Clone corona-transition2 and place **transition2.lua** and the entire **transiti
 Require transition2 into a local variable to have full control of which transition2 functions to use, like this:
 
 ```lua
-local transition2 = require("transition2")
+-- In some Lua file:
+local transition = require("transition2")
+transition.to(...)
+transition.moveSine(...)
 
-transition2.to(...)
-transition2.moveSine(...)
--- You get it...
+-- In another Lua file
+transition.to(...) --> Will call original transition library
+transition.moveSine(...) --> ERROR: Undefined function moveSine
+
+-- I think you get the picture...
 ```
 
-Or, if you're a daredevil, just override the global transition variable in your **main.lua** to run all transitions through transition2. :-)
+Or, if you're a daredevil, just override the global transition variable in your **main.lua** to run every single transitions through transition2 and hope for the best. :-)
 
 ```lua
 transition = require("transition2")
 
-transition.to(...)
-transition.moveSine(...)
-transition.blink(...)
--- Yeah, let's do this and see how far we get!
+-- Then, in whatever Lua file of your project
+transition.to(...) --> transition2.to(...)
+transition.moveSine(...) --> transition2.moveSine(...)
+transition.blink(...) --> transition2.blink(...)
+transition.cancel(...) --> transition2.cancel(...)
+-- Yeah, I bet you got that part too... :-)
 ```
 
 ## Important note
