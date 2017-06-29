@@ -3,7 +3,7 @@ This is the main algorithm for the transition2 library.
 
 Markus Ranner 2017
 --]]
-local transition = require("transition")
+local transition2 = {}
 
 -- Keep a table of references to all ongoing extended transitions, grouped by tag to make it easy to pause/resume/cancel all transitions for a specific tag
 local transitionsByTag = {
@@ -47,7 +47,7 @@ local function doExtendedTransition(transitionExtension, target, params)
         tag = params.tag or "untagged",
         reverse = transitionExtension.reverse or params.reverse or false,
         enterFrameListener = nil, -- Will be set further down
-        isPaused = false, -- Can be flipped by calling transition.pause() and transition.resume()
+        isPaused = false, -- Can be flipped by calling transition2.pause() and transition2.resume()
         target = target,
         -- Start/end values will be set every time a new iteration starts
         startValue = nil,
@@ -279,9 +279,8 @@ local function controlTransition(whatToControl, params)
     end
 end
 
--- Override existing cancel function
-local oldCancel = transition.cancel
-transition.cancel = function(whatToCancel)
+-- Override cancel
+transition2.cancel = function(whatToCancel)
     controlTransition(whatToCancel, {
         controlTransitionRef = function(transitionRef)
             cleanUpTransition(transitionRef)            
@@ -293,13 +292,12 @@ transition.cancel = function(whatToCancel)
         controlTag = function(tag)
             transitionsByTag[tag] = {}
         end,
-        oldControlFunc = oldCancel
+        oldControlFunc = transition.cancel
     })    
 end
 
 -- Override pause
-local oldPause = transition.pause
-transition.pause = function(whatToPause)
+transition2.pause = function(whatToPause)
     controlTransition(whatToPause, {
         controlTransitionRef = function(transitionRef)
             transitionRef.isPaused = true
@@ -307,13 +305,12 @@ transition.pause = function(whatToPause)
                 transitionRef.onPause(transitionRef.target)
             end
         end,
-        oldControlFunc = oldPause
+        oldControlFunc = transition.pause
     })
 end
 
 -- Override resume
-local oldResume = transition.resume
-transition.resume = function(whatToResume)    
+transition2.resume = function(whatToResume)    
     controlTransition(whatToResume, {
         controlTransitionRef = function(transitionRef)
             transitionRef.isPaused = false            
@@ -321,7 +318,7 @@ transition.resume = function(whatToResume)
                 transitionRef.onResume(transitionRef.target)
             end
         end,
-        oldControlFunc = oldResume
+        oldControlFunc = transition.resume
     })
 end
 
@@ -330,15 +327,15 @@ end
 -- See transition2.lua for example usage
 return function(config) 
     for funcName, extension in pairs(config) do
-        transition[funcName] = function(target, params)
+        transition2[funcName] = function(target, params)
             if (extension.transitionFunction) then               
                 -- Convenience functions, so we just call an existing transition function with modified params
-                return transition[extension.transitionFunction](target, extension.getParams(target, params))
+                return transition2[extension.transitionFunction](target, extension.getParams(target, params))
             else                             
                 return doExtendedTransition(extension, target, params)                
             end
         end
     end
         
-    return transition
+    return transition2
 end
