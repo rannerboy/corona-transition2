@@ -1,6 +1,7 @@
 --[[
 
 Moves a display object using a "bungy strech" effect.
+Requires the target display object to have a path with four nodes (x1, y1) to (x4, y4), like images and rects.
 
 Example usage:
 

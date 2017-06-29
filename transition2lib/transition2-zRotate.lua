@@ -1,7 +1,7 @@
 --[[
 
 Rotates a display object in the z dimension.
-Requires the target display object to have a path with four nodes, like images and rects.
+Requires the target display object to have a path with four nodes (x1, y1) to (x4, y4), like images and rects.
 
 Example usage:
 
