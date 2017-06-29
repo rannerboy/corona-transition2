@@ -131,7 +131,7 @@ Each overridden function will in addition to its usual parameters also offer the
 
 The overridden functions also implement automatic transition cancelling. For example, each to() transition for a display object will be cancelled as soon as the display object has been removed. No need to keep track of transition refs and cancel them manually!
 
-This functionality can easily be tested like this:
+This auto-cancel functionality can easily be verified like this:
 
 ```lua
 transition.blink(displayObject, {
