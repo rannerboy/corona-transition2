@@ -19,16 +19,9 @@ local RECT_PATH_PROPS = { "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4" }
 return {
     getStartValue = function(target, params)
         local startValue = {}
-        
-        for i = 1, #SIMPLE_PROPS do
-            local propName = SIMPLE_PROPS[i]
-            if (params[propName] ~= nil) then
-                startValue[propName] = target[propName] or 0
-            end
-        end
-        
-        -- For rect paths, we check the (x1,y1)...(x4,y4) props
+                
         if (utils.isRectPath(target)) then            
+            -- For rect paths, we check only the (x1,y1)...(x4,y4) props
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
                 if (params[propName] ~= nil) then                    
@@ -36,27 +29,37 @@ return {
                     --print(startValue[propName])
                 end
             end 
+        else       
+            -- Regular display object
+            for i = 1, #SIMPLE_PROPS do
+                local propName = SIMPLE_PROPS[i]
+                if (params[propName] ~= nil) then
+                    startValue[propName] = target[propName] or 0
+                end
+            end
         end
+
         
         return startValue
     end,
 
     getEndValue = function(target, params)
         local endValue = {}
-        
-        for i = 1, #SIMPLE_PROPS do
-            local propName = SIMPLE_PROPS[i]
-            if (params[propName] ~= nil) then
-                endValue[propName] = (params.delta and ((target[propName] or 0) + params[propName]) or params[propName])
-            end
-        end
-        
-        -- For rect paths, we check the (x1,y1)...(x4,y4) props
+                
         if (utils.isRectPath(target)) then
+            -- For rect paths, we only check the (x1,y1)...(x4,y4) props
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
                 if (params[propName] ~= nil) then                    
                     endValue[propName] = (params.delta and (target[propName] + params[propName]) or params[propName])
+                end
+            end
+        else        
+            -- Regular display object
+            for i = 1, #SIMPLE_PROPS do
+                local propName = SIMPLE_PROPS[i]
+                if (params[propName] ~= nil) then
+                    endValue[propName] = (params.delta and ((target[propName] or 0) + params[propName]) or params[propName])
                 end
             end
         end
@@ -79,14 +82,10 @@ return {
     end,
     
     cancelWhen = function(target, params)
-        ---[[
-        print("cancelWhen here...")
         if (utils.isRectPath(target)) then
             return target.x1 == nil
         else
-            -- Normal display object
             return target.x == nil
         end
-        --]]
     end
 }
