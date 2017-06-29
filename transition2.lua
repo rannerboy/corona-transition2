@@ -20,6 +20,7 @@ return transition2({
     moveSine = require("transition2lib.transition2-moveSine"),   
     moveBungy = require("transition2lib.transition2-moveBungy"),   
     zRotate = require("transition2lib.transition2-zRotate"),
+    blink = require("transition2lib.transition2-blink"),
     
     -- Convenience functions (specialized versions of transitions)
     glow = require("transition2lib.transition2-glow"),       
