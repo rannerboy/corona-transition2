@@ -171,7 +171,7 @@ transition.glow(displayObject, {
 ```
 
 ### moveBungy()
-Moves a display object using a "bungy strech" effect in x and/or y direction.
+Moves a display object using a "bungy strech" effect in x and/or y direction. Requires the target display object to have a path with four nodes ((x1, y1), ..., (x4, y4)), like images and rects.
 
 ```lua
 transition.moveBungy(displayObject, {
