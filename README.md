@@ -136,7 +136,6 @@ This auto-cancel functionality can easily be verified like this:
 ```lua
 transition.blink(displayObject, {
     time = 1000,
-    iterations = 0,
     onCancel = function() print("blink was cancelled.") end
 })
 timer.performWithDelay(3000, function() displayObject:removeSelf() end)
