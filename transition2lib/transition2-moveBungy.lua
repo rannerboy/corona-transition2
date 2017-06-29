@@ -21,9 +21,7 @@ transition.moveBungy(displayObject, {
 Markus Ranner 2017
 
 --]]
-local function toRadians(degrees)
-    return ((degrees % 360) * math.pi / 180)
-end
+local utils = require("utils")
 
 return {
     getStartValue = function(displayObject, params)        
@@ -41,6 +39,10 @@ return {
     end,
 
     onValue = function(displayObject, params, value, isReverseCycle)
+        if (not utils.isRectPath(displayObject)) then
+            return
+        end
+        
         local offset = value        
         local path = displayObject.path
         

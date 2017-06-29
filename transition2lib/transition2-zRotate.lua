@@ -21,9 +21,7 @@ transition.zRotate(displayObject, {
 Markus Ranner 2017
 
 --]]
-local function toRadians(degrees)
-    return ((degrees % 360) * math.pi / 180)
-end
+local utils = require("utils")
 
 local function scaleStroke(target, params, depthOffsetRatio)
     if ((not params.disableStrokeScaling) and params.originalStrokeWidth) then
@@ -41,7 +39,12 @@ return {
     end,
 
     onValue = function(target, params, value, isReverseCycle)            
-        local radians = toRadians(value)
+        
+        if (not utils.isRectPath(target)) then
+            return
+        end
+        
+        local radians = utils.toRadians(value)
         
         if (params.horizontal) then            
             local radius = target.width/2 - target.strokeWidth

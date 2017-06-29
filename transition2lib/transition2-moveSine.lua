@@ -18,9 +18,7 @@ Markus Ranner 2017
 
 --]]
 
-local function toRadians(degrees)
-    return ((degrees % 360) * math.pi / 180)
-end
+local utils = require("utils")
 
 return {
     getStartValue = function(displayObject, params)        
@@ -41,12 +39,12 @@ return {
         local degrees = value        
         
         if (params.radiusX ~= 0) then
-            local offsetX = (params.radiusX * math.sin(toRadians(degrees.x)))
+            local offsetX = (params.radiusX * math.sin(utils.toRadians(degrees.x)))
             displayObject.x = params.startX + offsetX
         end
         
         if (params.radiusY ~= 0) then
-            local offsetY = (params.radiusY * math.sin(toRadians(degrees.y)))
+            local offsetY = (params.radiusY * math.sin(utils.toRadians(degrees.y)))
             displayObject.y = params.startY + offsetY
         end
     end,
