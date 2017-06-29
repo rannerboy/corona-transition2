@@ -36,6 +36,7 @@ transition.to(...) --> transition2.to(...)
 transition.moveSine(...) --> transition2.moveSine(...)
 transition.blink(...) --> transition2.blink(...)
 transition.cancel(...) --> transition2.cancel(...)
+
 -- Yeah, I bet you got that part too... :-)
 ```
 
