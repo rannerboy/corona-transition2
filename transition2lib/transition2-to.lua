@@ -17,16 +17,16 @@ Number. Applicable only if the target is a fill.effect applied to a ShapeObject.
 
 local utils = require("utils")
 
-local VALID_PROPS = { "x", "y", "rotation", "alpha", "xScale", "yScale", "width", "height" } -- FIXME: Add more
+local SIMPLE_PROPS = { "x", "y", "rotation", "alpha", "xScale", "yScale", "width", "height", "size" }
 
 return {
     getStartValue = function(displayObject, params)
         local startValue = {}
         
-        for i = 1, #VALID_PROPS do
-            local propName = VALID_PROPS[i]
+        for i = 1, #SIMPLE_PROPS do
+            local propName = SIMPLE_PROPS[i]
             if (params[propName] ~= nil) then
-                startValue[propName] = displayObject[propName]
+                startValue[propName] = displayObject[propName] or 0
             end
         end
         
@@ -36,10 +36,10 @@ return {
     getEndValue = function(displayObject, params)
         local endValue = {}
         
-        for i = 1, #VALID_PROPS do
-            local propName = VALID_PROPS[i]
+        for i = 1, #SIMPLE_PROPS do
+            local propName = SIMPLE_PROPS[i]
             if (params[propName] ~= nil) then
-                endValue[propName] = (params.delta and (displayObject[propName] + params[propName]) or params[propName])
+                endValue[propName] = (params.delta and ((displayObject[propName] or 0) + params[propName]) or params[propName])
             end
         end
         
