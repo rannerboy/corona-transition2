@@ -30,6 +30,8 @@ return {
     end,
     
     getParams = function(displayObject, params) 
+        local params = params or {}
+        
         params.transition = easing.inSine
         params.reverse = false
         params.iterations = 0
