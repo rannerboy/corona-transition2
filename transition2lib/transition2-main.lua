@@ -16,7 +16,7 @@ local function cleanUpTransition(transitionRef)
             Runtime:removeEventListener("enterFrame", transitionRef.enterFrameListener)
         end
         -- Unset cross reference
-        if (transitionRef.target) then
+        if (transitionRef.target and transitionRef.target.extTransitions) then
             transitionRef.target.extTransitions[transitionRef] = nil
         end
         -- Unset reference in table indexed by tag
@@ -28,8 +28,8 @@ end
 
 local function doExtendedTransition(transitionExtension, target, params)
     
-    -- Just fail silently if the target object is not a table
-    if ((target == nil) or (type(target) ~= "table")) then        
+    -- Just fail silently if the target object is nil. Can't check for table type here because that will exclude RectPath objects
+    if (target == nil) then       
         return false
     end
     
@@ -73,8 +73,11 @@ local function doExtendedTransition(transitionExtension, target, params)
     }
     
     -- Save transition reference on target object. Use ref as key for quick indexing and resetting
+    -- NOTE! If target is a RectPath it will be read-only, so we must do a double nil check just because of that
     target.extTransitions = target.extTransitions or {}
-    target.extTransitions[transitionRef] = true
+    if (target.extTransitions) then
+        target.extTransitions[transitionRef] = true
+    end
     
     -- Save transition reference in table indexed by tag
     transitionsByTag[transitionRef.tag] = transitionsByTag[transitionRef.tag] or {}
