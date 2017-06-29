@@ -141,13 +141,18 @@ local function doExtendedTransition(transitionExtension, target, params)
             -- Pass the next value(s) to the handling function of the transition implementation
             transitionExtension.onValue(target, params, nextValue, isReverseCycle)
         else
-            -- Finally, just make sure that we have reached the correct end value
-            transitionExtension.onValue(target, params, transitionRef.endValue, isReverseCycle)
+            -- Finally, just make sure that we have reached the correct end value            
+            -- We have to check a special case here, i.e. easing.continuousLoop which will end at the startValue instead of at the endValue...
+            local finalValue = transitionRef.endValue
+            if (transitionRef.easingFunc == easing.continuousLoop) then
+                finalValue = transitionRef.startValue
+            end
+            transitionExtension.onValue(target, params, finalValue, isReverseCycle)            
                            
             -- If transition should be reversed, we reverse it and start over by resetting current transition time
             if (transitionRef.reverse and not isReverseCycle) then
                 isReverseCycle = true
-                transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
+                transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue                
                 transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
                 currentTransitionTime = 0
             else      
