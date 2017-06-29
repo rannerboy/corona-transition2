@@ -1,10 +1,26 @@
 # corona-transition2
 
-transition2 is an extension to the [Corona transition library](https://docs.coronalabs.com/api/library/transition/index.html). It comes with a few new transition functions and can easily be extended with your own custom transition functions.
+transition2 is an extension to the [Corona transition library](https://docs.coronalabs.com/api/library/transition/index.html). It comes with a some new transition functions and can easily be extended with your own custom transition functions.
 
-The current documentation is very brief. Have a look at the source code for better understanding, it's fairly well commented.
+The current documentation is rather brief, but go ahead and have a look at the source code for better understanding, it's fairly well commented.
+
+## Installing
+
+Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder in the root of your Corona project.
 
 **NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**.
+
+Require transition2 into a local variable to have full control of which transition2 functions to use, like this:
+
+```lua
+local transition2 = require("transition2")
+```
+
+Or, if you're a daredevil, just override the global transition variable in your **main.lua** to run all transitions through transition2. :-)
+
+```lua
+transition = require("transition2")
+```
 
 ## Important note
 
