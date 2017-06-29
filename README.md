@@ -8,7 +8,7 @@ The current documentation is very brief. Have a look at the source code for bett
 
 ## Important note
 
-Please note that transition2 is work in progress. There might be bugs, performance can likely be improved, and the number of new transition functions to choose from is still very limited.
+Please note that transition2 is work in progress. There might be bugs, performance can likely be improved, and the number of new transition functions to choose from is still quite limited.
 
 Just grab the source code as is and make your own modifications if you need to. I'd be really happy for any feedback, especially in case you run into any bugs or other problems. And if you decide to implement your own custom transition function it would be awesome if you want to share it so I can make it part of the default transition2 library!
 
@@ -122,25 +122,71 @@ timer.performWithDelay(10000, function()
     transition.cancel(transitionTo)
 end)
 ```
+## Overridden transition functions
+The following functions overrides the transition functions of the original transition library. The goal is for each of them to behave exactly like the corresponding function in the transition library and offer the same list of parameters. That way, the transition library can be exchanged with transition2 without any code changes.
 
-## Transition functions
+The reason for overriding instead of just forwarding the function calls is that the overridden functions can be equiped with additional functinality.
 
-TODO: Full parameter references will be added later... For now, see the examples or view the source code for each transition for details. All examples assume that you've overriden the default transition library through:
+Each overridden function will in addition to its usual parameters also offer the transition2 specific parameters listed in the basic usage example above. For example: reverse, transitionReverse, onIterationStart and onIterationComplete.
+
+The overridden functions also implement automatic transition cancelling. For example, each to() transition for a display object will be cancelled as soon as the display object has been removed. No need to keep track of transition refs and cancel them manually!
+
+This functionality can easily be tested like this:
 
 ```lua
-local transition = require("transition2")
+transition.blink(displayObject, {
+    time = 1000,
+    iterations = 0,
+    onCancel = function() print("blink was cancelled.") end
+})
+timer.performWithDelay(3000, function() displayObject:removeSelf() end)
 ```
 
 ### blink()
 Blinks a display object in and out over a specified time, repeating indefinitely.
-Mimics and overrides the blink() function of the original transition library.
-This override was done to offer the same additional transition params as other transition2 functions.
-Also makes sure that a blink transition is auto-cancelled when the display object has been removed.
+
+Overrides: [https://docs.coronalabs.com/api/library/transition/blink.html](https://docs.coronalabs.com/api/library/transition/blink.html)
 
 ```lua
 transition.blink(displayObject, {
     time = 500 -- Default = 1000
 })
+```
+
+### to()
+
+Animates (transitions) a display object using an optional easing algorithm. Use this to move, rotate, fade, or scale an object over a specific period of time.
+
+Overrides: [https://docs.coronalabs.com/api/library/transition/to.html](https://docs.coronalabs.com/api/library/transition/to.html)
+
+```lua
+transition.to(displayObject, {
+    time = 1000,
+    x = 200,
+    y = -200,
+    delta = true,
+    iterations = 0,
+    reverse = true,
+    transition = easing.inSine,
+    transitionReverse = easing.outSine    
+})
+
+-- Transitioning a RectPath
+transition.to(anotherDisplayObject.path, {
+    x1 = 100,
+    y1 = -100,
+    x4 = -100,
+    y4 = 100,
+    time = 1000
+})    
+```
+
+## New transition functions
+
+TODO: Full parameter references will be added later... For now, see the examples or view the source code for each transition for details. All examples assume that you've overriden the default transition library through:
+
+```lua
+local transition = require("transition2")
 ```
 
 ### bounce()
