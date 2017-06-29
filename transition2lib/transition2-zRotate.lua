@@ -40,7 +40,7 @@ return {
 
     onValue = function(target, params, value, isReverseCycle)            
         
-        if (not utils.isRectPath(target)) then
+        if (not utils.hasRectPath(target)) then
             return
         end
         

@@ -39,7 +39,7 @@ return {
     end,
 
     onValue = function(displayObject, params, value, isReverseCycle)
-        if (not utils.isRectPath(displayObject)) then
+        if (not utils.hasRectPath(displayObject)) then
             return
         end
         
