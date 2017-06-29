@@ -1,6 +1,6 @@
 --[[
 
-Overrides the default transition.to() function
+Overrides the default transition.to() function: https://docs.coronalabs.com/api/library/transition/to.html
 
 Markus Ranner 2017
 
