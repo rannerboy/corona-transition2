@@ -131,6 +131,18 @@ TODO: Full parameter references will be added later... For now, see the examples
 local transition = require("transition2")
 ```
 
+### blink()
+Blinks a display object in and out over a specified time, repeating indefinitely.
+Mimics and overrides the blink() function of the original transition library.
+This override was done to offer the same additional transition params as other transition2 functions.
+Also makes sure that a blink transition is auto-cancelled when the display object has been removed.
+
+```lua
+transition.blink(displayObject, {
+    time = 500 -- Default = 1000
+})
+```
+
 ### bounce()
 Bounces a display object.
 
