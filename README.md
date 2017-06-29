@@ -87,8 +87,9 @@ transition.color(displayObject, {
 })
 
 --[[
-We can still call the original transition functions.
-They are completely unaffected by transition2.
+Some of the functions from the original transition library have been overridden (see next section for complete list). The overriding functions offer the same basic parameter list as the overridden ones, so you can use them exactly like you did with the original transition library.
+
+The transition functions that have not yet been overridden (e.g. dissolve()/fadeIn()/fadeOut() are completely unaffected by transition2.
 --]]
 local transitionTo = transition.to(displayObject, {
     transition = easing.continuousLoop,
