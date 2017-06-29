@@ -4,6 +4,8 @@ transition2 is an extension to the [Corona transition library](https://docs.coro
 
 The current documentation is rather brief, but go ahead and have a look at the source code for better understanding, it's fairly well commented.
 
+You can also check out [this topic in the Corona forums](https://forums.coronalabs.com/topic/69305-transition2-a-customizable-extension-to-the-transition-library/) to see some live examples, make feature requests, report bugs, or just let me know what you think about transition2. Thanks!
+
 ## Installing
 
 Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder in the root of your Corona project.
