@@ -125,7 +125,7 @@ end)
 ## Overridden transition functions
 The following functions overrides the transition functions of the original transition library. The goal is for each of them to behave exactly like the corresponding function in the transition library and offer the same list of parameters. That way, the transition library can be exchanged with transition2 without any code changes.
 
-The reason for overriding instead of just forwarding the function calls is that the overridden functions can be equiped with additional functinality.
+The reason for overriding instead of just forwarding the function calls is that the overridden functions can be equipped with additional functionality.
 
 Each overridden function will in addition to its usual parameters also offer the transition2 specific parameters listed in the basic usage example above. For example: reverse, transitionReverse, onIterationStart and onIterationComplete.
 
