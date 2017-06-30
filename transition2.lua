@@ -30,6 +30,7 @@ local transition2 = createTransition2({
     blink = require("transition2-blink"),
     to = require("transition2-to"),
     scaleTo = require("transition2-scaleTo"),
+    scaleBy = require("transition2-scaleBy"),
 })
 
 -- Functions that are just forwarded to the original transition library
@@ -39,6 +40,5 @@ transition2.fadeIn = transition.fadeIn
 transition2.fadeOut = transition.fadeOut
 transition2.moveBy = transition.moveBy
 transition2.moveTo = transition.moveTo
-transition2.scaleBy = transition.scaleBy
 
 return transition2

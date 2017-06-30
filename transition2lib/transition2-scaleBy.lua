@@ -10,7 +10,7 @@ local scale = require("transition2-scale")
 local scaleTo = utils.copyTable(scale)
 
 scaleTo.getParams = function(displayObject, params)
-    params.delta = false
+    params.delta = true
     
     return scale.getParams(displayObject, params)
 end    
