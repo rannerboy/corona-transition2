@@ -123,12 +123,9 @@ transition.color(displayObject, {
 })
 
 --[[
-Every function of the original transition library except from() has been overridden in transition2.
-The overriding functions offer the same basic parameter list as the overridden ones,
+Every function of the original transition library has been replicated in transition2.
+Each function offers the same basic parameter list,
 so you can use them exactly like you did with the original transition library.
-
-The only transition function that has not yet been overridden is from()
-which is still completely unaffected by transition2.
 --]]
 local transitionTo = transition.to(displayObject, {
     transition = easing.continuousLoop,
@@ -139,8 +136,8 @@ local transitionTo = transition.to(displayObject, {
 })
 
 --[[
-pause(), resume() and cancel() have been overriden in transition2
-but they should work just like they do in the original transition library
+pause(), resume() and cancel() have also been implemented in transition2
+to work just like they do in the original transition library.
 --]]
 
 timer.performWithDelay(2000, function()
@@ -162,16 +159,16 @@ timer.performWithDelay(10000, function()
     transition.cancel(transitionTo)
 end)
 ```
-## Overridden transition functions
-Every transition function of the original transition library **except from()** has been overridden by a new transition2 implementation. The goal is for each of them to behave exactly like the corresponding function in the transition library and offer the same list of parameters. That way, the transition library can be exchanged with transition2 without any code changes.
+## Replicated legacy functions
+Every transition function of the original transition library has been replicated by a new transition2 implementation. The goal is for each of them to behave exactly like the corresponding function in the transition library and offer the same list of parameters. That way, the transition library can be exchanged with transition2 without any code changes.
 
-The reason for overriding instead of just forwarding the function calls is that the overriding functions can be equipped with additional functionality.
+The reason for implementing new functions instead of just forwarding the function calls to the transition library is that the new transition2 functions can be equipped with additional parameters and functionality.
 
-Each overriding function will in addition to the overridden function's parameters also offer the transition2 specific parameters listed in the basic usage example above. For example, when calling transition.to() you'll be able to use parameters like reverse, transitionReverse, onIterationStart and onIterationComplete.
+Each replicated legacy function will offer all of the transition2 specific parameters listed in the basic usage example above. For example, when calling transition2.to() you'll be able to use parameters like reverse, transitionReverse, onIterationStart and onIterationComplete.
 
-The overriding functions also implement automatic transition cancelling. For example, each to() transition for a display object will be cancelled as soon as the display object has been removed. No need to keep track of transition refs and cancel them manually!
+The transition2 functions also implement automatic transition cancelling. For example, each to() transition for a display object will be cancelled as soon as the display object has been removed. No need to keep track of transition refs and cancel them manually!
 
-This auto-cancel functionality can easily be verified like this:
+The auto-cancel functionality can be easily verified like this:
 
 ```lua
 transition.blink(displayObject, {
@@ -196,7 +193,7 @@ transition.blink(displayObject, {
 
 Performs a dissolve transition between two display objects.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/dissolve.html](https://docs.coronalabs.com/api/library/transition/dissolve.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/dissolve.html](https://docs.coronalabs.com/api/library/transition/dissolve.html)
 
 Syntax:
 ```lua
@@ -209,43 +206,49 @@ transition.dissolve( object1, object2, time, delay )
 
 Fades an object to alpha of 1.0 over the specified time.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/fadeIn.html](https://docs.coronalabs.com/api/library/transition/fadeIn.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/fadeIn.html](https://docs.coronalabs.com/api/library/transition/fadeIn.html)
 
 ### fadeOut()
 
 Fades an object to alpha of 0.0 over the specified time.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/fadeOut.html](https://docs.coronalabs.com/api/library/transition/fadeOut.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/fadeOut.html](https://docs.coronalabs.com/api/library/transition/fadeOut.html)
+
+### from()
+
+Similar to transition.to() except that the starting property values are specified in the parameters table and the final values are the corresponding property values of the object prior to the call.
+
+Replaces: [https://docs.coronalabs.com/api/library/transition/from.html](https://docs.coronalabs.com/api/library/transition/from.html)
 
 ### moveBy()
 
 Moves an object by the specified x and y coordinate amount over a specified time.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/moveBy.html](https://docs.coronalabs.com/api/library/transition/moveBy.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/moveBy.html](https://docs.coronalabs.com/api/library/transition/moveBy.html)
 
 ### moveTo()
 
 Moves an object to the specified x and y coordinate amount over a specified time.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/moveTo.html](https://docs.coronalabs.com/api/library/transition/moveTo.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/moveTo.html](https://docs.coronalabs.com/api/library/transition/moveTo.html)
 
 ### scaleBy()
 
 Scales an object by the specified xScale and yScale amounts over a specified time.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/scaleBy.html](https://docs.coronalabs.com/api/library/transition/scaleBy.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/scaleBy.html](https://docs.coronalabs.com/api/library/transition/scaleBy.html)
 
 ### scaleTo()
 
 Scales an object to the specified xScale and yScale amounts over a specified time.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/scaleTo.html](https://docs.coronalabs.com/api/library/transition/scaleTo.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/scaleTo.html](https://docs.coronalabs.com/api/library/transition/scaleTo.html)
 
 ### to()
 
 Animates (transitions) a display object using an optional easing algorithm. Use this to move, rotate, fade, or scale an object over a specific period of time.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/to.html](https://docs.coronalabs.com/api/library/transition/to.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/to.html](https://docs.coronalabs.com/api/library/transition/to.html)
 
 ```lua
 transition.to(displayObject, {
