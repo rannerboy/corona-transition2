@@ -307,6 +307,10 @@ TODO: Full parameter references will be added later... For now, see the examples
 
 ```lua
 local transition = require("transition2")
+
+-- OR override global transition
+
+transition = require("transition2")
 ```
 
 ### bounce()
