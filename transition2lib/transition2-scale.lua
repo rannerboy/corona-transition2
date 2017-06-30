@@ -44,6 +44,6 @@ return {
     end,
     
     cancelWhen = function(displayObject, params)
-        return not displayObject.alpha
+        return not displayObject.xScale
     end    
 }
