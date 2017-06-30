@@ -204,13 +204,13 @@ Fades an object to alpha of 0.0 over the specified time.
 
 Overrides: [https://docs.coronalabs.com/api/library/transition/fadeOut.html](https://docs.coronalabs.com/api/library/transition/fadeOut.html)
 
-### MoveBy()
+### moveBy()
 
 Moves an object by the specified x and y coordinate amount over a specified time.
 
 Overrides: [https://docs.coronalabs.com/api/library/transition/moveBy.html](https://docs.coronalabs.com/api/library/transition/moveBy.html)
 
-### MoveTo()
+### moveTo()
 
 Moves an object to the specified x and y coordinate amount over a specified time.
 
