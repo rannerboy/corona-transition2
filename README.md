@@ -192,6 +192,30 @@ transition.blink(displayObject, {
 })
 ```
 
+### fadeIn()
+
+Fades an object to alpha of 1.0 over the specified time.
+
+Overrides: [https://docs.coronalabs.com/api/library/transition/fadeIn.html](https://docs.coronalabs.com/api/library/transition/fadeIn.html)
+
+### fadeOut()
+
+Fades an object to alpha of 0.0 over the specified time.
+
+Overrides: [https://docs.coronalabs.com/api/library/transition/fadeOut.html](https://docs.coronalabs.com/api/library/transition/fadeOut.html)
+
+### scaleBy()
+
+Scales an object by the specified xScale and yScale amounts over a specified time.
+
+Overrides: [https://docs.coronalabs.com/api/library/transition/scaleBy.html](https://docs.coronalabs.com/api/library/transition/scaleBy.html)
+
+### scaleTo()
+
+Scales an object to the specified xScale and yScale amounts over a specified time.
+
+Overrides: [https://docs.coronalabs.com/api/library/transition/scaleTo.html](https://docs.coronalabs.com/api/library/transition/scaleTo.html)
+
 ### to()
 
 Animates (transitions) a display object using an optional easing algorithm. Use this to move, rotate, fade, or scale an object over a specific period of time.
