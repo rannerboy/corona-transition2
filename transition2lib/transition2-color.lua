@@ -46,5 +46,9 @@ return {
     cancelWhen = function(displayObject, params)
         -- If the setFillColor no longer exists, the display object has been removed and there is no need for the transition to go on
         return not displayObject.setFillColor        
+    end,
+    
+    getParams = function(displayObject, params)
+        return params
     end
 }

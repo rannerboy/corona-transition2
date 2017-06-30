@@ -10,8 +10,24 @@ local function hasRectPath(obj)
     return obj and obj.path and isRectPath(obj.path)
 end
 
+-- Performs a shallow copy of a table. 
+-- @return A new table
+function copyTable(source)
+    local dest
+    if (type(source) == "table") then
+        dest = {}
+        for k, v in pairs(source) do
+            dest[k] = v
+        end
+    else -- Non-table types are just returned
+        dest = source
+    end
+    return dest
+end
+
 return {
    toRadians = toRadians, 
    isRectPath = isRectPath,
    hasRectPath = hasRectPath,
+   copyTable = copyTable,
 }

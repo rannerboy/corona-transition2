@@ -25,10 +25,8 @@ return {
     end,
  
     --[[
-    Optional.
-    
-    Override the params passed into the transition function by hard coding or calculating new param values.
-    If no params need to be overridden, just return params as is or don't implement this function at all.
+    Overrides the params passed into the transition function by hard coding or calculating new param values.
+    If no params need to be overridden, just return params as is.
     This function is only called at the beginning of the transition to get initial parameters.
     @param target The target object for the transition, for example a target object
     @return A params table

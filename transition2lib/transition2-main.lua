@@ -332,12 +332,15 @@ end
 return function(config) 
     for funcName, extension in pairs(config) do
         transition2[funcName] = function(target, params)
-            if (extension.transitionFunction) then               
+            return doExtendedTransition(extension, target, params)                
+            --[[
+            if (extension.transitionFunction) then                               
                 -- Convenience functions, so we just call an existing transition function with modified params
                 return transition2[extension.transitionFunction](target, extension.getParams(target, params))
             else                             
                 return doExtendedTransition(extension, target, params)                
             end
+            --]]
         end
     end
       
