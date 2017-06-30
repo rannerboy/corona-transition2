@@ -1,13 +1,12 @@
 --[[
 This is the main algorithm for the transition2 library.
+Should NOT be altered when just implementing new custom transition functions.
 
 Markus Ranner 2017
 --]]
 
 -- The transition2 module that will be populated with functions
 local transition2 = {}
--- Override the global transition with a local reference. This is done to avoid endless recursion in case the global transition is changed to point to transition2 (transition = require("transition2"))
-local transition = transition
 
 -- Keep a table of references to all ongoing extended transitions, grouped by tag to make it easy to pause/resume/cancel all transitions for a specific tag
 local transitionsByTag = {
@@ -261,7 +260,6 @@ local function controlTransition(whatToControl, params)
             -- A string value means that we should control all transitions for a specific tag
             local tag = whatToControl            
             controlTransitionsForTag(tag)
-            params.oldControlFunc(whatToControl)
         else 
             -- Here we assume that we're handling a target object, so we control all transitions for that object only
             local target = whatToControl
@@ -271,15 +269,12 @@ local function controlTransition(whatToControl, params)
                     params.controlTransitionRef(target.transitionRef)
                 end
             end
-            
-            params.oldControlFunc(target)
         end
     else
         -- Control all transitions
         for tag,_ in pairs(transitionsByTag) do
             controlTransitionsForTag(tag)
         end
-        params.oldControlFunc()
     end
 end
 
@@ -296,7 +291,6 @@ transition2.cancel = function(whatToCancel)
         controlTag = function(tag)
             transitionsByTag[tag] = {}
         end,
-        oldControlFunc = transition.cancel
     })    
 end
 
@@ -309,7 +303,6 @@ transition2.pause = function(whatToPause)
                 transitionRef.onPause(transitionRef.target)
             end
         end,
-        oldControlFunc = transition.pause
     })
 end
 
@@ -322,7 +315,6 @@ transition2.resume = function(whatToResume)
                 transitionRef.onResume(transitionRef.target)
             end
         end,
-        oldControlFunc = transition.resume
     })
 end
 
@@ -333,14 +325,6 @@ return function(config)
     for funcName, extension in pairs(config) do
         transition2[funcName] = function(target, params)
             return doExtendedTransition(extension, target, params)                
-            --[[
-            if (extension.transitionFunction) then                               
-                -- Convenience functions, so we just call an existing transition function with modified params
-                return transition2[extension.transitionFunction](target, extension.getParams(target, params))
-            else                             
-                return doExtendedTransition(extension, target, params)                
-            end
-            --]]
         end
     end
       
