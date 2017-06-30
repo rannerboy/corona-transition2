@@ -241,6 +241,26 @@ Moves an object to the specified x and y coordinate amount over a specified time
 
 Replaces: [https://docs.coronalabs.com/api/library/transition/moveTo.html](https://docs.coronalabs.com/api/library/transition/moveTo.html)
 
+### pause()
+
+The transition.pause() function pauses one of the following, depending on the passed parameter:
+* All transitions in progress, when called with no parameters.
+* A specific transition, when called with a transition reference.
+* All transitions on a specific display object, when called with a display object reference.
+* All transitions with a specific tag, when called with a string parameter representing a tag.
+
+Replaces: [https://docs.coronalabs.com/api/library/transition/pause.html](https://docs.coronalabs.com/api/library/transition/pause.html)
+
+### resume()
+
+The transition.resume() function resumes one of the following, depending on the passed parameter:
+* All paused transitions, when called with no parameters.
+* A specific paused transition, when called with a transition reference.
+* All paused transitions on a specific display object, when called with a display object reference.
+* All paused transitions with a specific tag, when called with a string parameter representing a tag.
+
+Replaces: [https://docs.coronalabs.com/api/library/transition/resume.html](https://docs.coronalabs.com/api/library/transition/resume.html)
+
 ### scaleBy()
 
 Scales an object by the specified xScale and yScale amounts over a specified time.
