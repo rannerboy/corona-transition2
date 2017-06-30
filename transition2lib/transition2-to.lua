@@ -25,16 +25,23 @@ return {
             -- FIXME: Should exclude time, delay and other numeric params here
             for propName, propValue in pairs(params) do
                 if (type(propValue) == "number") then
-                    startValue[propName] = target[propName] or 0
+                    if (params._isFromModeEnabled) then
+                        startValue[propName] = (params.delta and ((target[propName] or 0) + propValue) or propValue)
+                    else
+                        startValue[propName] = target[propName] or 0
+                    end
                 end
             end
         elseif (utils.isRectPath(target)) then            
             -- For rect paths, we check only the (x1,y1)...(x4,y4) props
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
-                if (params[propName] ~= nil) then                    
-                    startValue[propName] = target[propName] or 0
-                    --print(startValue[propName])
+                if (params[propName] ~= nil) then
+                    if (params._isFromModeEnabled) then
+                        startValue[propName] = (params.delta and (target[propName] + params[propName]) or params[propName])
+                    else
+                        startValue[propName] = target[propName] or 0                       
+                    end
                 end
             end 
         else       
@@ -42,7 +49,11 @@ return {
             for i = 1, #SIMPLE_PROPS do
                 local propName = SIMPLE_PROPS[i]
                 if (params[propName] ~= nil) then
-                    startValue[propName] = target[propName] or 0
+                    if (params._isFromModeEnabled) then
+                        startValue[propName] = (params.delta and (target[propName] + params[propName]) or params[propName])
+                    else
+                        startValue[propName] = target[propName] or 0
+                    end
                 end
             end
         end
@@ -63,7 +74,11 @@ return {
             -- FIXME: Should exclude time, delay and other numeric params here
             for propName, propValue in pairs(params) do
                 if (type(propValue) == "number") then
-                    endValue[propName] = (params.delta and ((target[propName] or 0) + propValue) or propValue)
+                    if (params._isFromModeEnabled) then
+                        endValue[propName] = target[propName] or 0
+                    else
+                        endValue[propName] = (params.delta and ((target[propName] or 0) + propValue) or propValue)
+                    end
                 end
             end
         elseif (utils.isRectPath(target)) then
@@ -71,7 +86,11 @@ return {
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
                 if (params[propName] ~= nil) then                    
-                    endValue[propName] = (params.delta and (target[propName] + params[propName]) or params[propName])
+                    if (params._isFromModeEnabled) then
+                        endValue[propName] = target[propName] or 0
+                    else
+                        endValue[propName] = (params.delta and (target[propName] + params[propName]) or params[propName])
+                    end
                 end
             end
         else        
@@ -79,7 +98,11 @@ return {
             for i = 1, #SIMPLE_PROPS do
                 local propName = SIMPLE_PROPS[i]
                 if (params[propName] ~= nil) then
-                    endValue[propName] = (params.delta and ((target[propName] or 0) + params[propName]) or params[propName])
+                    if (params._isFromModeEnabled) then
+                        endValue[propName] = target[propName] or 0
+                    else
+                        endValue[propName] = (params.delta and ((target[propName] or 0) + params[propName]) or params[propName])
+                    end
                 end
             end
         end
@@ -103,6 +126,9 @@ return {
         params.time = params.time or 500
         params.transition = params.transition or easing.linear
         params.delta = (params.delta == true)            
+    
+        -- This is a little hack to allow transition2.from() to share implementation with transition.to().
+        params._isFromModeEnabled = params._isFromModeEnabled or false
     
         return params
     end,

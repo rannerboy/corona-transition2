@@ -29,19 +29,17 @@ local transition2 = createTransition2({
     -- Overridden transition library functions
     blink = require("transition2-blink"),
     to = require("transition2-to"),
+    from = require("transition2-from"),
     scaleTo = require("transition2-scaleTo"),
     scaleBy = require("transition2-scaleBy"),
     fadeIn = require("transition2-fadeIn"),
     fadeOut = require("transition2-fadeOut"),
     moveTo = require("transition2-moveTo"),
-    moveBy = require("transition2-moveBy"),
+    moveBy = require("transition2-moveBy"),    
 })
 
 -- Dissolve is handled as a special case since it has a completely different signature than other transition functions
 -- It is only implemented because of backwards compatibility with the transition library.
 transition2.dissolve = require("transition2-dissolve")(transition2)
-
--- Functions that are just forwarded to the original transition library
-transition2.from = transition.from
 
 return transition2
