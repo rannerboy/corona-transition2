@@ -10,6 +10,10 @@ local function hasRectPath(obj)
     return obj and obj.path and isRectPath(obj.path)
 end
 
+local function isFillEffect(target)
+    return type(target) == "userdata"
+end
+
 -- Performs a shallow copy of a table. 
 -- @return A new table
 function copyTable(source)
@@ -30,4 +34,5 @@ return {
    isRectPath = isRectPath,
    hasRectPath = hasRectPath,
    copyTable = copyTable,
+   isFillEffect = isFillEffect,
 }
