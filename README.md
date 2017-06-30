@@ -163,7 +163,7 @@ timer.performWithDelay(10000, function()
 end)
 ```
 ## Overridden transition functions
-The following functions overrides the transition functions of the original transition library. The goal is for each of them to behave exactly like the corresponding function in the transition library and offer the same list of parameters. That way, the transition library can be exchanged with transition2 without any code changes.
+Every transition function of the original transition library **except from()** has been overriden by a new transition2 implementation. The goal is for each of them to behave exactly like the corresponding function in the transition library and offer the same list of parameters. That way, the transition library can be exchanged with transition2 without any code changes.
 
 The reason for overriding instead of just forwarding the function calls is that the overriding functions can be equipped with additional functionality.
 
