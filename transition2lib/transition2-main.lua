@@ -340,8 +340,6 @@ return function(config)
             end
         end
     end
-       
-    
       
     return transition2
 end
