@@ -341,15 +341,7 @@ return function(config)
         end
     end
        
-    -- Functions that are just forwarded to the original transition library
-    transition2.from = transition.from
-    transition2.dissolve = transition.dissolve
-    transition2.fadeIn = transition.fadeIn
-    transition2.fadeOut = transition.fadeOut
-    transition2.moveBy = transition.moveBy
-    transition2.moveTo = transition.moveTo
-    transition2.scaleBy = transition.scaleBy
-    transition2.scaleTo = transition.scaleTo
+    
       
     return transition2
 end
