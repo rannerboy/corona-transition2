@@ -8,7 +8,7 @@ You can also check out [this topic in the Corona forums](https://forums.coronala
 
 ## Installing
 
-Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder in the root of your Corona project.
+Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder at the root of your Corona project.
 
 **NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**.
 
