@@ -127,7 +127,7 @@ Every function of the original transition library except from() has been overrid
 The overriding functions offer the same basic parameter list as the overridden ones,
 so you can use them exactly like you did with the original transition library.
 
-The only transition functions that has not yet been overridden is from()
+The only transition function that has not yet been overridden is from()
 which is still completely unaffected by transition2.
 --]]
 local transitionTo = transition.to(displayObject, {
