@@ -14,23 +14,22 @@ local RECT_PATH_PROPS = { "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4" }
 return {
     getStartValue = function(target, params)
         local startValue = {}
-                
-        if (utils.isFillEffect(target)) then
-            -- For fill effects, we accept any numeric params since they may differ a lot between effects           
-            -- FIXME: Should exclude time, delay and other numeric params here
-            for propName, propValue in pairs(params) do
-                if (type(propValue) == "number") then
-                    startValue[propName] = target[propName] or 0
-                end
-            end
-        elseif (utils.isRectPath(target)) then            
+            
+        if (utils.isRectPath(target)) then            
             -- For rect paths, we check only the (x1,y1)...(x4,y4) props
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
                 if (params[propName] ~= nil) then
                     startValue[propName] = target[propName] or 0                                           
                 end
-            end 
+            end             
+        elseif (utils.isUserData(target)) then
+            -- If user data (e.g. fill effect) we accept any numeric props, but exclude control props to not mess up transition
+            for propName, propValue in pairs(params) do
+                if ((type(propValue) == "number") and (not utils.isTransitionControlProp(propName))) then
+                    startValue[propName] = target[propName] or 0
+                end
+            end        
         else       
             -- Regular display object
             for i = 1, #SIMPLE_PROPS do
@@ -52,20 +51,19 @@ return {
     getEndValue = function(target, params)
         local endValue = {}
         
-        if (utils.isFillEffect(target)) then
-            -- For fill effects, we accept any numeric params since they may differ a lot between effects           
-            -- FIXME: Should exclude time, delay and other numeric params here
-            for propName, propValue in pairs(params) do
-                if (type(propValue) == "number") then
-                    endValue[propName] = (params.delta and ((target[propName] or 0) + propValue) or propValue)                    
-                end
-            end
-        elseif (utils.isRectPath(target)) then
+        if (utils.isRectPath(target)) then
             -- For rect paths, we only check the (x1,y1)...(x4,y4) props
             for i = 1, #RECT_PATH_PROPS do
                 local propName = RECT_PATH_PROPS[i]
                 if (params[propName] ~= nil) then                    
                     endValue[propName] = (params.delta and (target[propName] + params[propName]) or params[propName])                    
+                end
+            end
+        elseif (utils.isUserData(target)) then
+            -- If user data (e.g. fill effect) we accept any numeric props, but exclude control props to not mess up transition
+            for propName, propValue in pairs(params) do
+                if ((type(propValue) == "number") and (not utils.isTransitionControlProp(propName))) then
+                    endValue[propName] = (params.delta and ((target[propName] or 0) + propValue) or propValue)                    
                 end
             end
         else        
@@ -106,7 +104,7 @@ return {
         
         if (utils.isRectPath(target)) then
             return target.x1 == nil
-        elseif (not utils.isFillEffect(target)) then
+        elseif (not utils.isUserData(target)) then
             return target.x == nil
         end
     end

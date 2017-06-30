@@ -10,13 +10,13 @@ local function hasRectPath(obj)
     return obj and obj.path and isRectPath(obj.path)
 end
 
-local function isFillEffect(target)
+local function isUserData(target)
     return type(target) == "userdata"
 end
 
 -- Performs a shallow copy of a table. 
 -- @return A new table
-function copyTable(source)
+local function copyTable(source)
     local dest
     if (type(source) == "table") then
         dest = {}
@@ -29,10 +29,37 @@ function copyTable(source)
     return dest
 end
 
+local function isTransitionControlProp(propName) 
+    local controlProps = {
+        time = true,
+        iterations = true,
+        tag = true,
+        transition = true,        
+        delay = true,
+        delta = true,
+        onStart = true,
+        onComplete = true,
+        onPause = true,
+        onResume = true,
+        onCancel = true,
+        onRepeat = true,
+        
+        iterationDelay = true,        
+        onIterationStart = true,
+        onIterationComplete = true,
+        reverse = true,
+        transitionReverse = true,
+        cancelWhen = true,
+    }
+    
+    return controlProps[propName] or false
+end
+
 return {
    toRadians = toRadians, 
    isRectPath = isRectPath,
    hasRectPath = hasRectPath,
    copyTable = copyTable,
-   isFillEffect = isFillEffect,
+   isUserData = isUserData,
+   isTransitionControlProp = isTransitionControlProp,
 }
