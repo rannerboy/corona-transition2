@@ -33,12 +33,12 @@ local transition2 = createTransition2({
     scaleBy = require("transition2-scaleBy"),
     fadeIn = require("transition2-fadeIn"),
     fadeOut = require("transition2-fadeOut"),
+    moveTo = require("transition2-moveTo"),
+    moveBy = require("transition2-moveBy"),
 })
 
 -- Functions that are just forwarded to the original transition library
 transition2.from = transition.from
 transition2.dissolve = transition.dissolve
-transition2.moveBy = transition.moveBy
-transition2.moveTo = transition.moveTo
 
 return transition2
