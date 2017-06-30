@@ -373,6 +373,16 @@ transition.moveSine(displayObject, {
     startDegreesY = 90,
 })
 ```
+### waterBalloon()
+Transforms the xScale and yScale of a display object back and forth repeatedly,
+to create an effect similar to that of a water balloon changing shape. 
+
+```lua
+transition.waterBalloon(displayObject, {
+    time = 500,
+    intensity = 0.4 -- A value between 0-1. Default = 0.25.
+})
+```
 
 ### zRotate()
 Rotates a display object in the z dimension, either horizontally or vertically.
