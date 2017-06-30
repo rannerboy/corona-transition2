@@ -181,13 +181,22 @@ timer.performWithDelay(3000, function() displayObject:removeSelf() end)
 ### blink()
 Blinks a display object in and out over a specified time, repeating indefinitely.
 
-Overrides: [https://docs.coronalabs.com/api/library/transition/blink.html](https://docs.coronalabs.com/api/library/transition/blink.html)
+Replaces: [https://docs.coronalabs.com/api/library/transition/blink.html](https://docs.coronalabs.com/api/library/transition/blink.html)
 
 ```lua
 transition.blink(displayObject, {
     time = 500 -- Default = 1000
 })
 ```
+
+### cancel()
+The transition.cancel() function will cancel one of the following, depending on the passed parameter:
+* All transitions in progress, when called with no parameters.
+* A specific transition, when called with a transition reference.
+* All transitions on a specific display object, when called with a display object reference.
+* All transitions with a specific tag, when called with a string parameter representing a tag.
+
+Replaces: [https://docs.coronalabs.com/api/library/transition/cancel.html](https://docs.coronalabs.com/api/library/transition/cancel.html)
 
 ### dissolve()
 
