@@ -20,8 +20,8 @@ local function cleanUpTransition(transitionRef)
             Runtime:removeEventListener("enterFrame", transitionRef.enterFrameListener)
         end
         -- Unset cross reference
-        if (transitionRef.target and transitionRef.target.extTransitions) then
-            transitionRef.target.extTransitions[transitionRef] = nil
+        if (transitionRef.target and transitionRef.target.transitionRefs) then
+            transitionRef.target.transitionRefs[transitionRef] = nil
         end
         -- Unset reference in table indexed by tag
         if (transitionsByTag[transitionRef.tag]) then
@@ -78,9 +78,9 @@ local function doExtendedTransition(transitionExtension, target, params)
     
     -- Save transition reference on target object. Use ref as key for quick indexing and resetting
     -- NOTE! If target is a RectPath it will be read-only, so we must do a double nil check just because of that
-    target.extTransitions = target.extTransitions or {}
-    if (target.extTransitions) then
-        target.extTransitions[transitionRef] = true
+    target.transitionRefs = target.transitionRefs or {}
+    if (target.transitionRefs) then
+        target.transitionRefs[transitionRef] = true
     end
     
     -- Save transition reference in table indexed by tag
@@ -266,8 +266,8 @@ local function controlTransition(whatToControl, params)
             -- Here we assume that we're handling a target object, so we control all transitions for that object only
             local target = whatToControl
             
-            if (target.extTransitions) then
-                for _, transitionRef in pairs(target.extTransitions) do
+            if (target.transitionRefs) then
+                for _, transitionRef in pairs(target.transitionRefs) do
                     params.controlTransitionRef(target.transitionRef)
                 end
             end
