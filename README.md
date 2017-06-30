@@ -1,4 +1,4 @@
-# corona-transition2
+# What is transition2?
 
 **transition2 is a full rewrite of the [Corona transition library](https://docs.coronalabs.com/api/library/transition/index.html)**. It replicates every function of the transition library also includes a set of new transition functions. A number of new parameters have also been introduced together with an easy way to auto-cancel transitions that should no longer run. Finally, transition2 can be easily extended with your own custom transition functions. Unleash your imagination. :-)
 
