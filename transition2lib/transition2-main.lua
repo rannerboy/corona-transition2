@@ -29,6 +29,19 @@ local function cleanUpTransition(transitionRef)
     end
 end
 
+local function calculateParams(transitionExtension, params)
+    if (transitionExtension.getParams) then  
+        -- We also allow params to be a function to be able to recalculate params between iterations
+        if (type(params) == "function") then            
+            return transitionExtension.getParams(target, params())
+        else
+            return transitionExtension.getParams(target, params)
+        end
+    else 
+        return params
+    end
+end
+
 local function doExtendedTransition(transitionExtension, target, params)
     
     -- Just fail silently if the target object is nil. Can't check for table type here because that will exclude RectPath objects
@@ -37,42 +50,40 @@ local function doExtendedTransition(transitionExtension, target, params)
     end
     
     -- Override params
-    if (transitionExtension.params) then
-        params = transitionExtension.getParams(target, params)
-    end
+    local calculatedParams = calculateParams(transitionExtension, params)
     
     -- Create a new transition reference to that will be returned from the transition extension function
     -- This reference holds a the entire config (and some state) for a transition and will be used to uniquely identify each transition
     local transitionRef = {
         isExtendedTransition = true, -- To be checked by pause/resume/cancel
-        time = params.time or 500,        
-        delay = params.delay or 0,
-        iterations = params.iterations or 1,
-        iterationDelay = params.iterationDelay or 0,
-        tag = params.tag or "untagged",
-        reverse = transitionExtension.reverse or params.reverse or false,
+        time = calculatedParams.time or 500,        
+        delay = calculatedParams.delay or 0,
+        iterations = calculatedParams.iterations or 1,
+        iterationDelay = calculatedParams.iterationDelay or 0,
+        tag = calculatedParams.tag or "untagged",
+        reverse = transitionExtension.reverse or calculatedParams.reverse or false,
         enterFrameListener = nil, -- Will be set further down
         isPaused = false, -- Can be flipped by calling transition2.pause() and transition2.resume()
         target = target,
         -- Start/end values will be set every time a new iteration starts
         startValue = nil,
         endValue = nil,
-        easingFunc = params.transition or easing.linear,
-        easingReverseFunc = params.transitionReverse or params.transition or easing.linear,
-        onComplete = params.onComplete,
-        onStart = params.onStart,
-        onPause = params.onPause,
-        onResume = params.onResume,
-        onCancel = params.onCancel,
-        onRepeat = params.onRepeat,
-        onIterationStart = params.onIterationStart,
-        onIterationComplete = params.onIterationComplete,
+        easingFunc = calculatedParams.transition or easing.linear,
+        easingReverseFunc = calculatedParams.transitionReverse or calculatedParams.transition or easing.linear,
+        onComplete = calculatedParams.onComplete,
+        onStart = calculatedParams.onStart,
+        onPause = calculatedParams.onPause,
+        onResume = calculatedParams.onResume,
+        onCancel = calculatedParams.onCancel,
+        onRepeat = calculatedParams.onRepeat,
+        onIterationStart = calculatedParams.onIterationStart,
+        onIterationComplete = calculatedParams.onIterationComplete,
         cancelWhen = function()
             -- The cancelWhen function can be set both in params and in the transition config, so we check both to see if at least one is fulfilled.
             return (
-                (params.cancelWhen and params.cancelWhen())
+                (calculatedParams.cancelWhen and calculatedParams.cancelWhen())
                 or
-                (transitionExtension.cancelWhen and transitionExtension.cancelWhen(target, params))
+                (transitionExtension.cancelWhen and transitionExtension.cancelWhen(target, calculatedParams))
             )
         end
     }
@@ -144,7 +155,7 @@ local function doExtendedTransition(transitionExtension, target, params)
             end
             
             -- Pass the next value(s) to the handling function of the transition implementation
-            transitionExtension.onValue(target, params, nextValue, isReverseCycle)
+            transitionExtension.onValue(target, calculatedParams, nextValue, isReverseCycle)
         else
             -- Finally, just make sure that we have reached the correct end value            
             -- We have to check a special case here, i.e. easing.continuousLoop which will end at the startValue instead of at the endValue...
@@ -152,7 +163,7 @@ local function doExtendedTransition(transitionExtension, target, params)
             if (transitionRef.easingFunc == easing.continuousLoop) then
                 finalValue = transitionRef.startValue
             end
-            transitionExtension.onValue(target, params, finalValue, isReverseCycle)            
+            transitionExtension.onValue(target, calculatedParams, finalValue, isReverseCycle)            
                            
             -- If transition should be reversed, we reverse it and start over by resetting current transition time
             if (transitionRef.reverse and not isReverseCycle) then
@@ -164,7 +175,7 @@ local function doExtendedTransition(transitionExtension, target, params)
                 -- Make a callback at the end of each iteration
                 -- This is not the same as onRepeat. onIterationComplete will be called at the end of EACH iteration, and before any iterationDelay.
                 if (transitionRef.onIterationComplete) then
-                    transitionRef.onIterationComplete(target, params)
+                    transitionRef.onIterationComplete(target, calculatedParams)
                 end
                 
                 -- Check if we are done with our iterations
@@ -186,19 +197,20 @@ local function doExtendedTransition(transitionExtension, target, params)
                         
                         -- Make callbacks if callback functions are defined
                         if (transitionRef.onRepeat) then
-                            transitionRef.onRepeat(target, params)
+                            transitionRef.onRepeat(target, calculatedParams)
                         end
                         
+                        -- Before starting a new iteration we must recalculate params in case target object properties have been changed by onRepeat or onIterationComplete.
+                        calculatedParams = calculateParams(transitionExtension, params)
+                        
+                        -- Note that we must call getStartValue and getEndValue here in case onIterationComplete have modified params
+                        transitionRef.startValue = transitionExtension.getStartValue(target, calculatedParams)
+                        transitionRef.endValue = transitionExtension.getEndValue(target, calculatedParams)
+                        
+                        -- After params have been calculated we move on to start the next iteration
                         if (transitionRef.onIterationStart) then
-                            transitionRef.onIterationStart(target, params)
+                            transitionRef.onIterationStart(target, calculatedParams)
                         end                        
-                        
-                        -- We call getStartValue and getEndValue here in case onIterationComplete or onIterationStart have modified params
-                        -- Note! This requires recalculateOnIteration = true, otherwise legacy functions like to() won't behave like in the original transition library
-                        if (params.recalculateOnIteration) then
-                            transitionRef.startValue = transitionExtension.getStartValue(target, params)
-                            transitionRef.endValue = transitionExtension.getEndValue(target, params)
-                        end
                        
                         -- If doing reverse transition we must restore some values before starting the next iteration
                         if (transitionRef.reverse) then
@@ -231,9 +243,12 @@ local function doExtendedTransition(transitionExtension, target, params)
             transitionRef.onIterationStart(target, params)
         end
         
+        -- Then recalculate params
+        calculatedParams = calculateParams(transitionExtension, params)
+        
         -- Then get the start/end values
-        transitionRef.startValue = transitionExtension.getStartValue(target, params)
-        transitionRef.endValue = transitionExtension.getEndValue(target, params)
+        transitionRef.startValue = transitionExtension.getStartValue(target, calculatedParams)
+        transitionRef.endValue = transitionExtension.getEndValue(target, calculatedParams)
         
         -- Finally, attach the enter frame listener to allow the transition to start
         lastFrameTimestamp = system.getTimer()
