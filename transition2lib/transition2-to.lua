@@ -6,7 +6,7 @@ Markus Ranner 2017
 
 --]]
 
-local utils = require("utils")
+local utils = require("transition2lib.utils")
 
 local SIMPLE_PROPS = { "x", "y", "rotation", "alpha", "xScale", "yScale", "width", "height", "size" }
 local RECT_PATH_PROPS = { "x1", "y1", "x2", "y2", "x3", "y3", "x4", "y4" }

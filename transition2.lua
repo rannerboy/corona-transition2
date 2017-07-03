@@ -13,30 +13,30 @@ Markus Ranner 2017
 --]]
 package.path = package.path .. ";./?.lua;./transition2lib/?.lua;"
 
-local createTransition2 = require("transition2-main")
+local createTransition2 = require("transition2lib.transition2-main")
 
 local transition2 = createTransition2({        
     -- New transition functions
-    color = require("transition2-color"),
-    bounce = require("transition2-bounce"),
-    moveSine = require("transition2-moveSine"),   
-    moveBungy = require("transition2-moveBungy"),   
-    zRotate = require("transition2-zRotate"),
-    waterBalloon = require("transition2-waterBalloon"),
+    color = require("transition2lib.transition2-color"),
+    bounce = require("transition2lib.transition2-bounce"),
+    moveSine = require("transition2lib.transition2-moveSine"),   
+    moveBungy = require("transition2lib.transition2-moveBungy"),   
+    zRotate = require("transition2lib.transition2-zRotate"),
+    waterBalloon = require("transition2lib.transition2-waterBalloon"),
     
     -- Convenience functions (specialized versions of transitions)
-    glow = require("transition2-glow"),  
+    glow = require("transition2lib.transition2-glow"),  
     
     -- Overridden transition library functions
-    blink = require("transition2-blink"),
-    to = require("transition2-to"),
-    from = require("transition2-from"),
-    scaleTo = require("transition2-scaleTo"),
-    scaleBy = require("transition2-scaleBy"),
-    fadeIn = require("transition2-fadeIn"),
-    fadeOut = require("transition2-fadeOut"),
-    moveTo = require("transition2-moveTo"),
-    moveBy = require("transition2-moveBy"),    
+    blink = require("transition2lib.transition2-blink"),
+    to = require("transition2lib.transition2-to"),
+    from = require("transition2lib.transition2-from"),
+    scaleTo = require("transition2lib.transition2-scaleTo"),
+    scaleBy = require("transition2lib.transition2-scaleBy"),
+    fadeIn = require("transition2lib.transition2-fadeIn"),
+    fadeOut = require("transition2lib.transition2-fadeOut"),
+    moveTo = require("transition2lib.transition2-moveTo"),
+    moveBy = require("transition2lib.transition2-moveBy"),    
 })
 
 -- Dissolve is handled as a special case since it has a completely different signature than other transition functions

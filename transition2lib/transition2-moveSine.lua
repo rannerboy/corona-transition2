@@ -18,7 +18,7 @@ Markus Ranner 2017
 
 --]]
 
-local utils = require("utils")
+local utils = require("transition2lib.utils")
 
 return {
     getStartValue = function(displayObject, params)        

@@ -17,8 +17,8 @@ Markus Ranner 2017
 
 --]]
 
-local utils = require("utils")
-local color = require("transition2-color")
+local utils = require("transition2lib.utils")
+local color = require("transition2lib.transition2-color")
 
 local glow = utils.copyTable(color)
 

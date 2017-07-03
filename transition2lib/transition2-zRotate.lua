@@ -21,7 +21,7 @@ transition.zRotate(displayObject, {
 Markus Ranner 2017
 
 --]]
-local utils = require("utils")
+local utils = require("transition2lib.utils")
 
 local function scaleStroke(target, params, depthOffsetRatio)
     if ((not params.disableStrokeScaling) and params.originalStrokeWidth) then

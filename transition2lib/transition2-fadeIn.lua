@@ -13,8 +13,8 @@ transition.fadeIn(obj, { time=2000 })
 Markus Ranner 2017
 
 --]]
-local utils = require("utils")
-local fade = require("transition2-fade")
+local utils = require("transition2lib.utils")
+local fade = require("transition2lib.transition2-fade")
 
 local fadeIn = utils.copyTable(fade)
 
