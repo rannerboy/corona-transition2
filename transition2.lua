@@ -22,8 +22,7 @@ local transition2 = createTransition2({
     moveSine = require("transition2lib.transition2-moveSine"),   
     moveBungy = require("transition2lib.transition2-moveBungy"),   
     zRotate = require("transition2lib.transition2-zRotate"),
-    waterBalloon = require("transition2lib.transition2-waterBalloon"),
-    oceanWaves = require("transition2lib.transition2-oceanWaves"),
+    waterBalloon = require("transition2lib.transition2-waterBalloon"),    
     
     -- Convenience functions (specialized versions of transitions)
     glow = require("transition2lib.transition2-glow"),  
