@@ -95,9 +95,9 @@ return {
         end
         
         if (params.shading) then
-            local a = params.minShadingIntensity + ((math.abs((90 - (value % 180))) / 90) * (params.maxShadingIntensity - params.minShadingIntensity))
-            print(value .. " = " .. a)
-            target.fill.effect.intensity = a
+            local brightnessIntensity = -params.shadingDarknessIntensity + ((math.abs((90 - (value % 180))) / 90) * (params.shadingBrightnessIntensity + params.shadingDarknessIntensity))
+            --print(value .. " = " .. a)
+            target.fill.effect.intensity = brightnessIntensity
         end
     end,
  
@@ -121,8 +121,14 @@ return {
         if (params.shading) then
             target.fill.effect = "filter.brightness" 
             target.fill.effect.intensity = 0
-            params.maxShadingIntensity = params.maxShadingIntensity or 0            
-            params.minShadingIntensity = params.minShadingIntensity or -1
+            if ((params.shadingBrightnessIntensity == nil) or (params.shadingBrightnessIntensity < 0) or (params.shadingBrightnessIntensity > 1)) then
+                -- Default to 0 if invalid parameter. 0 = normal brightness.
+                params.shadingBrightnessIntensity = 0
+            end
+            if ((params.shadingDarknessIntensity == nil) or (params.shadingDarknessIntensity < 0) or (params.shadingDarknessIntensity > 1)) then
+                -- Default to 1 if invalid parameter. 1 = full darkness (black).
+                params.shadingDarknessIntensity = 1
+            end            
         end        
         
         return params
