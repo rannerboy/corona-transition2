@@ -10,7 +10,7 @@ You can also check out [this topic in the Corona forums](https://forums.coronala
 
 Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder at the root of your Corona project.
 
-**NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**.
+**NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**, and probably also in most Lua files in the transition2lib folder...
 
 Require transition2 into a local variable to have full control of which transition2 functions to use, like this:
 
@@ -100,10 +100,30 @@ transition.color(displayObject, {
     -- iterationDelay will only occur between iterations, i.e. not before the first iteration or after the last iteration.
     iterationDelay = 500,
     
+    -- Setting recalculateOnIteration=true forces start/end values to be recalculated before each iteration starts.
+    -- This is necessary to be able to change properties on the target object or to change the params between iterations,
+    -- for properties that affect how the transition plays out.
+    -- Otherwise any changes made will be overwritten by the precalculated transition values at the start of each iteration.
+    -- Default is false, to make functions like to() behave like its legacy counterpart where values are not recalculated between iterations.
+    -- See onIterationStart below for example usage.
+    recalculateOnIteration = true,
+    
     -- onIterationStart will be called BEFORE EACH iteration, including the first one.
     -- It will be executed AFTER iterationDelay, just when a new iteration is started.
     -- Like onRepeat, it accepts transition params as a second param, to allow params to be changed between iterations.
-    onIterationStart = function(target, params) print("onIterationStart") end,
+    onIterationStart = function(target, params)
+        -- Change the endColor
+        -- Note! This requires that recalculateOnIteration=true (see above), or else the change will have no effect
+        -- since the startColor/endColor values have already been precalculated when the transition first started.
+        params.endColor = { math.random(), math.random(), math.random(), 1 }
+        
+        -- Randomize if we should apply transition to either stroke or fill for each iteration. Also randomize the stroke width.
+        -- These changes can be done without setting recalculateOnIteration=true,
+        -- because none of stroke/fill/strokeWidth directly affect the values in transition (which are only startColor/endColor).
+        params.stroke = (math.random(1, 2) == 1)
+        params.fill = not params.stroke
+        target.strokeWidth = math.random(1, 10)
+    end,
     
     -- onIterationComplete will be called AFTER EACH iteration, including the last one.
     -- It will be executed BEFORE iterationDelay, just when an iteration is completed.
