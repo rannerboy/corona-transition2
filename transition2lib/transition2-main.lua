@@ -190,12 +190,16 @@ local function doExtendedTransition(transitionExtension, target, params)
                             transitionRef.onIterationStart(target, params)
                         end
                         
-                        -- If doing reverse transition we must restore some values before starting the next iteration
-                        if (transitionRef.reverse) then
-                            -- Note that we must call getStartValue and getEndValue here in case onRepeat or onIterationComplete have modified params
+                        -- We check to see if we should recalculate start/end values in case any of the onX functions have made changes to data that affects param calculations, or direct changes to the params themselves.
+                        -- Not that recalculateOnIteration = true must be explicitly set. This is because of legacy reasons, for example to make the to() rewrite behave lite the original to() function.
+                        -- When starting a reverse iteration (which is not really a new iteration), we always recalculate or else the transition won't be reversed like it should
+                        if (transitionRef.reverse or params.recalculateOnIteration) then
                             transitionRef.startValue = transitionExtension.getStartValue(target, params)
                             transitionRef.endValue = transitionExtension.getEndValue(target, params)
-                            
+                        end
+                        
+                        -- If doing reverse transition we must restore some values before starting the next iteration
+                        if (transitionRef.reverse) then                            
                             transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
                         end
                     end
