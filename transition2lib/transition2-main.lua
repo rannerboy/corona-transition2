@@ -155,7 +155,7 @@ local function doExtendedTransition(transitionExtension, target, params)
             -- If transition should be reversed, we reverse it and start over by resetting current transition time
             if (transitionRef.reverse and not isReverseCycle) then
                 isReverseCycle = true
-                transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue                
+                transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
                 transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
                 currentTransitionTime = 0
             else      
@@ -192,14 +192,12 @@ local function doExtendedTransition(transitionExtension, target, params)
                         
                         -- We check to see if we should recalculate start/end values in case any of the onX functions have made changes to data that affects param calculations, or direct changes to the params themselves.
                         -- Not that recalculateOnIteration = true must be explicitly set. This is because of legacy reasons, for example to make the to() rewrite behave lite the original to() function.
-                        -- When starting a reverse iteration (which is not really a new iteration), we always recalculate or else the transition won't be reversed like it should
-                        if (transitionRef.reverse or params.recalculateOnIteration) then
+                        if (params.recalculateOnIteration) then
                             transitionRef.startValue = transitionExtension.getStartValue(target, params)
                             transitionRef.endValue = transitionExtension.getEndValue(target, params)
-                        end
-                        
-                        -- If doing reverse transition we must restore some values before starting the next iteration
-                        if (transitionRef.reverse) then                            
+                        elseif (transitionRef.reverse) then     
+                            -- If we haven't already recalculated start/end values, we must switch them back if we're completing a reverse transition
+                            transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
                             transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
                         end
                     end
