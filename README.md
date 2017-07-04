@@ -10,7 +10,7 @@ You can also check out [this topic in the Corona forums](https://forums.coronala
 
 Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder at the root of your Corona project.
 
-**NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**.
+**NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**, and probably also in most Lua files in the transition2lib folder...
 
 Require transition2 into a local variable to have full control of which transition2 functions to use, like this:
 
