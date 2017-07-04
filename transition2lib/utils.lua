@@ -50,6 +50,7 @@ local function isTransitionControlProp(propName)
         reverse = true,
         transitionReverse = true,
         cancelWhen = true,
+        recalculateOnIteration = true,
     }
     
     return controlProps[propName] or false
