@@ -98,8 +98,7 @@ return {
         end
         
         if (params.shading) then
-            local brightnessIntensity = -params.shadingDarknessIntensity + ((math.abs((90 - (value % 180))) / 90) * (params.shadingBrightnessIntensity + params.shadingDarknessIntensity))
-            --print(value .. " = " .. a)
+            local brightnessIntensity = -params.shadingDarknessIntensity + ((math.abs((90 - (value % 180))) / 90) * (params.shadingBrightnessIntensity + params.shadingDarknessIntensity))            
             target.fill.effect.intensity = brightnessIntensity
         end
     end,
