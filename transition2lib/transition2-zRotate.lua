@@ -93,6 +93,12 @@ return {
             -- Change the stroke width with the perspective
             scaleStroke(target, params, depthOffsetRatio)
         end
+        
+        if (params.shading) then
+            local a = params.minShadingIntensity + ((math.abs((90 - (value % 180))) / 90) * (params.maxShadingIntensity - params.minShadingIntensity))
+            print(value .. " = " .. a)
+            target.fill.effect.intensity = a
+        end
     end,
  
     getParams = function(target, params)  
@@ -110,6 +116,14 @@ return {
         -- Remember the original stroke width to be able to change it along with the perspective
         params.originalStrokeWidth = target.strokeWidth or 0
         params.disableStrokeScaling = (params.disableStrokeScaling == true)
+        
+        -- Setup a brightness filter for the target object if shading should be applied
+        if (params.shading) then
+            target.fill.effect = "filter.brightness" 
+            target.fill.effect.intensity = 0
+            params.maxShadingIntensity = params.maxShadingIntensity or 0            
+            params.minShadingIntensity = params.minShadingIntensity or -1
+        end        
         
         return params
     end,
