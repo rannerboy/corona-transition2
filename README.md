@@ -100,10 +100,31 @@ transition.color(displayObject, {
     -- iterationDelay will only occur between iterations, i.e. not before the first iteration or after the last iteration.
     iterationDelay = 500,
     
+    -- Setting recalculateOnIteration=true forces start/end values to be recalculated before each iteration starts.
+    -- This is necessary to be able to change properties on the target object between iterations, as well as making direct changes to the params.
+    -- Otherwise any changes made will be overwritten by the precalculated values at the start of each iteration.
+    -- Default is false, to make functions like to() behave like its legacy counterpart where values are not recalculated between iterations.
+    -- See onIterationStart below for example usage.
+    recalculateOnIteration = true,
+    
     -- onIterationStart will be called BEFORE EACH iteration, including the first one.
     -- It will be executed AFTER iterationDelay, just when a new iteration is started.
     -- Like onRepeat, it accepts transition params as a second param, to allow params to be changed between iterations.
-    onIterationStart = function(target, params) print("onIterationStart") end,
+    onIterationStart = function(target, params)
+        print("onIterationStart")
+        
+        -- Change the endColor
+        -- Note! This requires that recalculateOnIteration=true (see above), or else the change will have no effect
+        -- since the startColor/endColor values have already been precalculated when the transition first started.
+        params.endColor = { math.random(), math.random(), math.random(), 1 }
+        
+        -- Randomize if we should glow either stroke or fill for each iteration. Also randomize the stroke width.
+        -- All these changes can be done without setting recalculateOnIteration=true,
+        -- because none of the params stroke/fill/strokeWidth directly affect the transition itself.
+        params.stroke = (math.random(1, 2) == 1)
+        params.fill = not params.stroke
+        target.strokeWidth = math.random(1, 10)
+    end,
     
     -- onIterationComplete will be called AFTER EACH iteration, including the last one.
     -- It will be executed BEFORE iterationDelay, just when an iteration is completed.
