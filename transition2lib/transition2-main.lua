@@ -17,22 +17,30 @@ local transitionsByTag = {
 
 local function cleanUpTransition(transitionRef)
     if (transitionRef) then
-        if (transitionRef.enterFrameListener) then
-            Runtime:removeEventListener("enterFrame", transitionRef.enterFrameListener)
-        end
-        -- Unset cross reference
+        -- Flag transition as cancelled to allow the shared enter frame listener to clean it up
+        transitionRef.isCancelled = true
+        -- Unset cross reference from target->transitionRef
         if (transitionRef.target and transitionRef.target.transitionRefs) then
             transitionRef.target.transitionRefs[transitionRef] = nil
         end
+        
+        -- FIXME: This must be done by enter frame listener instead
         -- Unset reference in table indexed by tag
+        --[[
         if (transitionsByTag[transitionRef.tag]) then
             transitionsByTag[transitionRef.tag][transitionRef] = nil
         end
+        --]]
     end
 end
 
 -- This is the function that will be called on each frame for each transition
 local transitionHandler = function(transitionRef)
+    -- Extra check in case transition has been cancelled but not cleaned up yet
+    if (transitionRef.isCancelled) then
+        return
+    end
+    
     -- Automatically cancel the transition if some conditions have been met
     if (transitionRef.cancelWhen()) then
         cleanUpTransition(transitionRef)
