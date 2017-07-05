@@ -8,6 +8,8 @@ Markus Ranner 2017
 -- The transition2 module that will be populated with functions
 local transition2 = {}
 
+local _enterFrameListener = nil
+
 -- Keep a table of references to all ongoing extended transitions, grouped by tag to make it easy to pause/resume/cancel all transitions for a specific tag
 local transitionsByTag = {
     untagged = {} -- All transitions that are not tagged
@@ -29,6 +31,139 @@ local function cleanUpTransition(transitionRef)
     end
 end
 
+-- This is the function that will be called on each frame for each transition
+local transitionHandler = function(transitionRef)
+    -- Automatically cancel the transition if some conditions have been met
+    if (transitionRef.cancelWhen()) then
+        cleanUpTransition(transitionRef)
+        if(transitionRef.onCancel) then
+            transitionRef.onCancel(transitionRef.target)
+        end
+        return
+    end
+    
+    -- Calculate time since last frame and update timestamp for last frame
+    local now = system.getTimer()
+    local deltaTimeSinceLastFrame = (now - transitionRef.lastFrameTimestamp)
+    transitionRef.lastFrameTimestamp = now
+    
+    -- If transition is paused we do nothing more, but the lastFrameTimestamp will still be updated so that we can 
+    -- continue calculating total transition time when transition is resumed again
+    if (transitionRef.isPaused) then
+        return
+    end
+    
+    transitionRef.currentTransitionTime = transitionRef.currentTransitionTime + deltaTimeSinceLastFrame
+    transitionRef.totalTransitionTime = transitionRef.totalTransitionTime + deltaTimeSinceLastFrame
+    
+    -- We must do slightly different timing calculations depending on if transition reverse is activated or not
+    local isTransitionDone = false
+    if (transitionRef.reverse) then
+        isTransitionDone = transitionRef.totalTransitionTime >= ((transitionRef.currentIteration * transitionRef.time * 2) - (transitionRef.isReverseCycle and 0 or transitionRef.time))
+    else
+        isTransitionDone = transitionRef.totalTransitionTime >= (transitionRef.currentIteration * transitionRef.time)
+    end
+    
+    if (not isTransitionDone) then            
+        -- Make sure to handle table values as well as single numeric values
+        local nextValue = nil
+        if (type(transitionRef.startValue) == "table") then
+            nextValue = {}
+            for k, v in pairs(transitionRef.startValue) do
+                nextValue[k] = transitionRef.easingFunc(transitionRef.currentTransitionTime, transitionRef.time, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
+            end
+        else 
+            nextValue = transitionRef.easingFunc(transitionRef.currentTransitionTime, transitionRef.time, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
+        end
+        
+        -- Pass the next value(s) to the handling function of the transition implementation
+        transitionRef.transitionExtension.onValue(transitionRef.target, transitionRef.params, nextValue, transitionRef.isReverseCycle)
+    else
+        -- Finally, just make sure that we have reached the correct end value            
+        -- We have to check a special case here, i.e. easing.continuousLoop which will end at the startValue instead of at the endValue...
+        local finalValue = transitionRef.endValue
+        if (transitionRef.easingFunc == easing.continuousLoop) then
+            finalValue = transitionRef.startValue
+        end
+        transitionRef.transitionExtension.onValue(transitionRef.target, transitionRef.params, finalValue, transitionRef.isReverseCycle)            
+                       
+        -- If transition should be reversed, we reverse it and start over by resetting current transition time
+        if (transitionRef.reverse and not transitionRef.isReverseCycle) then
+            transitionRef.isReverseCycle = true
+            transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
+            transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
+            transitionRef.currentTransitionTime = 0
+        else      
+            -- Make a callback at the end of each iteration
+            -- This is not the same as onRepeat. onIterationComplete will be called at the end of EACH iteration, and before any iterationDelay.
+            if (transitionRef.onIterationComplete) then
+                transitionRef.onIterationComplete(transitionRef.target, transitionRef.params)
+            end
+            
+            -- Check if we are done with our iterations
+            -- Note! iterations == 0 means endless iterations
+            if ((transitionRef.iterations > 0) and (transitionRef.currentIteration >= transitionRef.iterations)) then
+                
+                cleanUpTransition(transitionRef)
+                
+                if (transitionRef.onComplete) then
+                    transitionRef.onComplete(transitionRef.target)
+                end
+            else
+                -- Start a new iteration
+                
+                local function startNextIteration()
+                    transitionRef.currentIteration = transitionRef.currentIteration + 1
+                    transitionRef.currentTransitionTime = 0    
+                    transitionRef.isReverseCycle = false
+                    
+                    -- Make callbacks if callback functions are defined
+                    if (transitionRef.onRepeat) then
+                        transitionRef.onRepeat(transitionRef.target, transitionRef.params)
+                    end
+                    if (transitionRef.onIterationStart) then
+                        transitionRef.onIterationStart(transitionRef.target, transitionRef.params)
+                    end
+                    
+                    -- We check to see if we should recalculate start/end values in case any of the onX functions have made changes to data that affects param calculations, or direct changes to the params themselves.
+                    -- Not that recalculateOnIteration = true must be explicitly set. This is because of legacy reasons, for example to make the to() rewrite behave lite the original to() function.
+                    if (transitionRef.params.recalculateOnIteration) then
+                        transitionRef.startValue = transitionRef.transitionExtension.getStartValue(transitionRef.target, transitionRef.params)
+                        transitionRef.endValue = transitionRef.transitionExtension.getEndValue(transitionRef.target, transitionRef.params)
+                    elseif (transitionRef.reverse) then     
+                        -- If we haven't already recalculated start/end values, we must switch them back if we're completing a reverse transition
+                        transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
+                        transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
+                    end
+                end
+                                    
+                -- Delay start of next generation is specified in params
+                if (transitionRef.iterationDelay and transitionRef.iterationDelay > 0) then
+                    transitionRef.isPaused = true
+                    timer.performWithDelay(transitionRef.iterationDelay, function()
+                        transitionRef.isPaused = false
+                        startNextIteration()
+                    end)
+                else
+                    startNextIteration()
+                end
+            end
+        end
+    end
+end
+
+_enterFrameListener = function(event)    
+    for tag, transitions in pairs(transitionsByTag) do
+        for t, _ in pairs(transitions) do
+            if (t.isStarted) then
+                transitionHandler(t)
+            end
+        end
+    end
+end
+
+Runtime:addEventListener("enterFrame", _enterFrameListener)
+
 local function doExtendedTransition(transitionExtension, target, params)
     
     -- Just fail silently if the target object is nil. Can't check for table type here because that will exclude RectPath objects
@@ -43,14 +178,17 @@ local function doExtendedTransition(transitionExtension, target, params)
     -- This reference holds a the entire config (and some state) for a transition and will be used to uniquely identify each transition
     local transitionRef = {
         isExtendedTransition = true, -- To be checked by pause/resume/cancel
+        transitionExtension = transitionExtension,
+        params = params, -- We need to keep a reference to the params object to pass it on to the onX functions from the global enter frame listener
         time = params.time or 500,        
         delay = params.delay or 0,
         iterations = params.iterations or 1,
         iterationDelay = params.iterationDelay or 0,
         tag = params.tag or "untagged",
         reverse = transitionExtension.reverse or params.reverse or false,
-        enterFrameListener = nil, -- Will be set further down
+        --enterFrameListener = nil, -- Will be set further down
         isPaused = false, -- Can be flipped by calling transition2.pause() and transition2.resume()
+        isStarted = false, -- Will be set to true after initial setup and possible delay
         target = target,
         -- Start/end values will be set every time a new iteration starts
         startValue = nil,
@@ -72,7 +210,17 @@ local function doExtendedTransition(transitionExtension, target, params)
                 or
                 (transitionExtension.cancelWhen and transitionExtension.cancelWhen(target, params))
             )
-        end
+        end,
+        
+        -- Keep track of which iteration is currently running
+        currentIteration = 1,
+        -- Keep track of which part of the cycle the transition is currently in
+        isReverseCycle = false,    
+    
+        -- Initialize timing variables
+        lastFrameTimestamp = nil, -- This will not be set until transition is actually started, after a possible delay 
+        currentTransitionTime = 0,
+        totalTransitionTime = 0, -- This is used to get better timing accuracy for transitions that loop over many iterations
     }
     
     -- Save transition reference on target object. Use ref as key for quick indexing and resetting
@@ -82,140 +230,10 @@ local function doExtendedTransition(transitionExtension, target, params)
         target.transitionRefs[transitionRef] = true
     end
     
-    -- Save transition reference in table indexed by tag
+    -- Save transition reference in global table indexed by tag
     transitionsByTag[transitionRef.tag] = transitionsByTag[transitionRef.tag] or {}
     transitionsByTag[transitionRef.tag][transitionRef] = true    
-    
-    -- Keep track of which iteration is currently running
-    local currentIteration = 1
-    -- Keep track of which part of the cycle the transition is currently in
-    local isReverseCycle = false    
-    
-    -- Initialize timing variables
-    local lastFrameTimestamp = nil -- This will not be set until transition is actually started, after a possible delay 
-    local currentTransitionTime = 0
-    local totalTransitionTime = 0 -- This is used to get better timing accuracy for transitions that loop over many iterations
-    
-    -- Create the enter frame listener that will handle the transition and store it on the transition reference
-    transitionRef.enterFrameListener = function(event)
-        -- Automatically cancel the transition if some conditions have been met
-        if (transitionRef.cancelWhen()) then
-            cleanUpTransition(transitionRef)
-            if(transitionRef.onCancel) then
-                transitionRef.onCancel(transitionRef.target)
-            end
-            return
-        end
-        
-        -- Calculate time since last frame and update timestamp for last frame
-        local now = system.getTimer()
-        local deltaTimeSinceLastFrame = (now - lastFrameTimestamp)
-        lastFrameTimestamp = now
-        
-        -- If transition is paused we do nothing more, but the lastFrameTimestamp will still be updated so that we can 
-        -- continue calculating total transition time when transition is resumed again
-        if (transitionRef.isPaused) then
-            return
-        end
-        
-        currentTransitionTime = currentTransitionTime + deltaTimeSinceLastFrame
-        totalTransitionTime = totalTransitionTime + deltaTimeSinceLastFrame
-        
-        -- We must do slightly different timing calculations depending on if transition reverse is activated or not
-        local isTransitionDone = false
-        if (transitionRef.reverse) then
-            isTransitionDone = totalTransitionTime >= ((currentIteration * transitionRef.time * 2) - (isReverseCycle and 0 or transitionRef.time))
-        else
-            isTransitionDone = totalTransitionTime >= (currentIteration * transitionRef.time)
-        end
-        
-        if (not isTransitionDone) then            
-            -- Make sure to handle table values as well as single numeric values
-            local nextValue = nil
-            if (type(transitionRef.startValue) == "table") then
-                nextValue = {}
-                for k, v in pairs(transitionRef.startValue) do
-                    nextValue[k] = transitionRef.easingFunc(currentTransitionTime, transitionRef.time, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
-                end
-            else 
-                nextValue = transitionRef.easingFunc(currentTransitionTime, transitionRef.time, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
-            end
-            
-            -- Pass the next value(s) to the handling function of the transition implementation
-            transitionExtension.onValue(target, params, nextValue, isReverseCycle)
-        else
-            -- Finally, just make sure that we have reached the correct end value            
-            -- We have to check a special case here, i.e. easing.continuousLoop which will end at the startValue instead of at the endValue...
-            local finalValue = transitionRef.endValue
-            if (transitionRef.easingFunc == easing.continuousLoop) then
-                finalValue = transitionRef.startValue
-            end
-            transitionExtension.onValue(target, params, finalValue, isReverseCycle)            
-                           
-            -- If transition should be reversed, we reverse it and start over by resetting current transition time
-            if (transitionRef.reverse and not isReverseCycle) then
-                isReverseCycle = true
-                transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
-                transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
-                currentTransitionTime = 0
-            else      
-                -- Make a callback at the end of each iteration
-                -- This is not the same as onRepeat. onIterationComplete will be called at the end of EACH iteration, and before any iterationDelay.
-                if (transitionRef.onIterationComplete) then
-                    transitionRef.onIterationComplete(target, params)
-                end
-                
-                -- Check if we are done with our iterations
-                -- Note! iterations == 0 means endless iterations
-                if ((transitionRef.iterations > 0) and (currentIteration >= transitionRef.iterations)) then
-                    
-                    cleanUpTransition(transitionRef)
-                    
-                    if (transitionRef.onComplete) then
-                        transitionRef.onComplete(target)
-                    end
-                else
-                    -- Start a new iteration
-                    
-                    local function startNextIteration()
-                        currentIteration = currentIteration + 1
-                        currentTransitionTime = 0    
-                        isReverseCycle = false
-                        
-                        -- Make callbacks if callback functions are defined
-                        if (transitionRef.onRepeat) then
-                            transitionRef.onRepeat(target, params)
-                        end
-                        if (transitionRef.onIterationStart) then
-                            transitionRef.onIterationStart(target, params)
-                        end
-                        
-                        -- We check to see if we should recalculate start/end values in case any of the onX functions have made changes to data that affects param calculations, or direct changes to the params themselves.
-                        -- Not that recalculateOnIteration = true must be explicitly set. This is because of legacy reasons, for example to make the to() rewrite behave lite the original to() function.
-                        if (params.recalculateOnIteration) then
-                            transitionRef.startValue = transitionExtension.getStartValue(target, params)
-                            transitionRef.endValue = transitionExtension.getEndValue(target, params)
-                        elseif (transitionRef.reverse) then     
-                            -- If we haven't already recalculated start/end values, we must switch them back if we're completing a reverse transition
-                            transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
-                            transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
-                        end
-                    end
-                                        
-                    -- Delay start of next generation is specified in params
-                    if (transitionRef.iterationDelay and transitionRef.iterationDelay > 0) then
-                        transitionRef.isPaused = true
-                        timer.performWithDelay(transitionRef.iterationDelay, function()
-                            transitionRef.isPaused = false
-                            startNextIteration()
-                        end)
-                    else
-                        startNextIteration()
-                    end
-                end
-            end
-        end
-    end
+
     
     -- Start transition
     timer.performWithDelay(transitionRef.delay, function()            
@@ -231,9 +249,10 @@ local function doExtendedTransition(transitionExtension, target, params)
         transitionRef.startValue = transitionExtension.getStartValue(target, params)
         transitionRef.endValue = transitionExtension.getEndValue(target, params)
         
-        -- Finally, attach the enter frame listener to allow the transition to start
-        lastFrameTimestamp = system.getTimer()
-        Runtime:addEventListener("enterFrame", transitionRef.enterFrameListener)
+        -- Finally, flag the transition ref as started to allow shared enter frame listener to run it
+        transitionRef.lastFrameTimestamp = system.getTimer()
+        transitionRef.isStarted = true
+        --Runtime:addEventListener("enterFrame", transitionRef.enterFrameListener)
     end)
     
     return transitionRef
