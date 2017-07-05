@@ -200,7 +200,7 @@ enterFrameListener = function(event)
     for i = #transitions, 1, -1 do
         local t = transitions[i]
         if (t.isCancelled) then
-            transitions[i] = nil
+            table.remove(transitions, i)
         elseif (t.isStarted) then
             transitionHandler(t)
         end
@@ -305,7 +305,7 @@ local function controlTransition(whatToControl, params)
     
     local function controlTransitionsForTag(tag) 
         if (transitionsByTag[tag]) then                
-            for transitionRef,_  in pairs(transitionsByTag[tag]) do                                    
+            for transitionRef,_  in pairs(transitionsByTag[tag]) do                                                    
                 params.controlTransitionRef(transitionRef)                
             end
         end
@@ -335,15 +335,21 @@ local function controlTransition(whatToControl, params)
         end
     else
         -- Control all transitions
-        for tag,_ in pairs(transitionsByTag) do
+        -- FIXME: Test this
+        for i = 1, #transitions do
+            params.controlTransitionRef(transitions[i])
+        end
+        --[[
+        for tag,_ in pairs(transitionsByTag) do            
             controlTransitionsForTag(tag)
         end
+        --]]
     end
 end
 
 -- Override cancel
 transition2.cancel = function(whatToCancel)
-    controlTransition(whatToCancel, {
+    controlTransition(whatToCancel, {        
         controlTransitionRef = function(transitionRef)
             cleanUpTransition(transitionRef)            
             
