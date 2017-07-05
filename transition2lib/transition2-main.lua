@@ -8,39 +8,69 @@ Markus Ranner 2017
 -- The transition2 module that will be populated with functions
 local transition2 = {}
 
-local _enterFrameListener = nil
+local enterFrameListener = nil
 
 -- Keep a table of references to all ongoing extended transitions, grouped by tag to make it easy to pause/resume/cancel all transitions for a specific tag
 local transitionsByTag = {
     untagged = {} -- All transitions that are not tagged
 }
+-- A simple array of all ongoing transitions, for performance reasons
+local transitions = {}
+
+-- A "lock variable" used when adding or removing transitions from state
+local locked = false
+
+local addTransition
+addTransition = function(transitionRef)
+    if (not locked) then
+        locked = true
+    
+        transitionsByTag[transitionRef.tag] = transitionsByTag[transitionRef.tag] or {}
+        transitionsByTag[transitionRef.tag][transitionRef] = true    
+        transitions[#transitions + 1] = transitionRef
+        
+        locked = false
+    else
+        -- Try again shortly...
+        timer.performWithDelay(20, function() addTransition(transitionRef) end)
+    end
+end
 
 local function cleanUpTransition(transitionRef)
     if (transitionRef) then
-        -- Flag transition as cancelled to allow the shared enter frame listener to clean it up
+        -- Immediately flag transition as cancelled so that it won't be processed anymore by the enter frame listner
         transitionRef.isCancelled = true
-        -- Unset cross reference from target->transitionRef
-        if (transitionRef.target and transitionRef.target.transitionRefs) then
-            transitionRef.target.transitionRefs[transitionRef] = nil
-        end
         
-        -- FIXME: This must be done by enter frame listener instead
-        -- Unset reference in table indexed by tag
-        --[[
-        if (transitionsByTag[transitionRef.tag]) then
-            transitionsByTag[transitionRef.tag][transitionRef] = nil
+        -- Then wait for lock to be available before actually doing the cleaning up
+        local removeTransition
+        removeTransition = function()
+            if (not locked) then
+                locked = true
+                
+                -- Unset cross reference from target->transitionRef
+                if (transitionRef.target and transitionRef.target.transitionRefs) then
+                    transitionRef.target.transitionRefs[transitionRef] = nil
+                end
+                
+                -- Unset reference in table indexed by tag                                
+                if (transitionsByTag[transitionRef.tag]) then
+                    transitionsByTag[transitionRef.tag][transitionRef] = nil
+                end                
+                
+                -- Note! Removal from the transitions array is done by the enter frame listener when it traverses the array and finds cancelled transitions
+                -- Can't do it here without looping through the array which would be inefficient.
+                
+                locked = false
+            else
+                -- Try again shortly...
+                timer.performWithDelay(20, removeTransition)
+            end
         end
-        --]]
     end
 end
 
 -- This is the function that will be called on each frame for each transition
 local transitionHandler = function(transitionRef)
-    -- Extra check in case transition has been cancelled but not cleaned up yet
-    if (transitionRef.isCancelled) then
-        return
-    end
-    
     -- Automatically cancel the transition if some conditions have been met
     if (transitionRef.cancelWhen()) then
         cleanUpTransition(transitionRef)
@@ -160,17 +190,26 @@ local transitionHandler = function(transitionRef)
     end
 end
 
-_enterFrameListener = function(event)    
-    for tag, transitions in pairs(transitionsByTag) do
-        for t, _ in pairs(transitions) do
-            if (t.isStarted) then
-                transitionHandler(t)
-            end
+enterFrameListener = function(event) 
+    -- Wait for lock to be released and then acquire it asap
+    while (locked) do
+    end
+    locked = true
+    
+    -- Loop backwards to be able to remove cancelled transitions
+    for i = #transitions, 1, -1 do
+        local t = transitions[i]
+        if (t.isCancelled) then
+            transitions[i] = nil
+        elseif (t.isStarted) then
+            transitionHandler(t)
         end
     end
+    
+    locked = false
 end
 
-Runtime:addEventListener("enterFrame", _enterFrameListener)
+Runtime:addEventListener("enterFrame", enterFrameListener)
 
 local function doExtendedTransition(transitionExtension, target, params)
     
@@ -194,7 +233,6 @@ local function doExtendedTransition(transitionExtension, target, params)
         iterationDelay = params.iterationDelay or 0,
         tag = params.tag or "untagged",
         reverse = transitionExtension.reverse or params.reverse or false,
-        --enterFrameListener = nil, -- Will be set further down
         isPaused = false, -- Can be flipped by calling transition2.pause() and transition2.resume()
         isStarted = false, -- Will be set to true after initial setup and possible delay
         target = target,
@@ -238,10 +276,7 @@ local function doExtendedTransition(transitionExtension, target, params)
         target.transitionRefs[transitionRef] = true
     end
     
-    -- Save transition reference in global table indexed by tag
-    transitionsByTag[transitionRef.tag] = transitionsByTag[transitionRef.tag] or {}
-    transitionsByTag[transitionRef.tag][transitionRef] = true    
-
+    addTransition(transitionRef)
     
     -- Start transition
     timer.performWithDelay(transitionRef.delay, function()            
@@ -260,7 +295,6 @@ local function doExtendedTransition(transitionExtension, target, params)
         -- Finally, flag the transition ref as started to allow shared enter frame listener to run it
         transitionRef.lastFrameTimestamp = system.getTimer()
         transitionRef.isStarted = true
-        --Runtime:addEventListener("enterFrame", transitionRef.enterFrameListener)
     end)
     
     return transitionRef
