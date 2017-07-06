@@ -131,7 +131,7 @@ return {
                 -- Default to 1 if invalid parameter. 1 = full darkness (black).
                 params.shadingDarknessIntensity = 1
             end            
-        end        
+        end
         
         return params
     end,

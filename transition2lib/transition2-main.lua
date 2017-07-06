@@ -69,6 +69,19 @@ local function cleanUpTransition(transitionRef)
     end
 end
 
+local function getNextValue(transitionRef)
+    local nextValue = nil
+    if (type(transitionRef.startValue) == "table") then
+        nextValue = {}
+        for k, v in pairs(transitionRef.startValue) do
+            nextValue[k] = transitionRef.easingFunc(transitionRef.currentTransitionTime, transitionRef.time, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
+        end
+    else 
+        nextValue = transitionRef.easingFunc(transitionRef.currentTransitionTime, transitionRef.time, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
+    end
+    return nextValue
+end
+
 -- This is the function that will be called on each frame for each transition
 local transitionHandler = function(transitionRef)
     -- Automatically cancel the transition if some conditions have been met
@@ -104,15 +117,7 @@ local transitionHandler = function(transitionRef)
     
     if (not isTransitionDone) then            
         -- Make sure to handle table values as well as single numeric values
-        local nextValue = nil
-        if (type(transitionRef.startValue) == "table") then
-            nextValue = {}
-            for k, v in pairs(transitionRef.startValue) do
-                nextValue[k] = transitionRef.easingFunc(transitionRef.currentTransitionTime, transitionRef.time, transitionRef.startValue[k], transitionRef.endValue[k] - transitionRef.startValue[k])
-            end
-        else 
-            nextValue = transitionRef.easingFunc(transitionRef.currentTransitionTime, transitionRef.time, transitionRef.startValue, transitionRef.endValue - transitionRef.startValue)
-        end
+        local nextValue = getNextValue(transitionRef)        
         
         -- Pass the next value(s) to the handling function of the transition implementation
         transitionRef.transitionExtension.onValue(transitionRef.target, transitionRef.params, nextValue, transitionRef.isReverseCycle)
@@ -269,33 +274,42 @@ local function doExtendedTransition(transitionExtension, target, params)
         totalTransitionTime = 0, -- This is used to get better timing accuracy for transitions that loop over many iterations
     }
     
-    -- Save transition reference on target object. Use ref as key for quick indexing and resetting
-    -- NOTE! If target is a RectPath it will be read-only, so we must do a double nil check just because of that
-    target.transitionRefs = target.transitionRefs or {}
-    if (target.transitionRefs) then
-        target.transitionRefs[transitionRef] = true
+    if (params.static == true) then
+        -- For static transitions, we just apply the end value immediately
+        -- No actual transition will be started and handled by the enter frame listener.
+        timer.performWithDelay(transitionRef.delay, function()            
+            local endValue = transitionExtension.getEndValue(target, params)
+            transitionExtension.onValue(target, params, endValue, false)
+        end)
+    else
+        -- Save transition reference on target object. Use ref as key for quick indexing and resetting
+        -- NOTE! If target is a RectPath it will be read-only, so we must do a double nil check just because of that
+        target.transitionRefs = target.transitionRefs or {}
+        if (target.transitionRefs) then
+            target.transitionRefs[transitionRef] = true
+        end
+        
+        addTransition(transitionRef)
+            
+        -- Start transition
+        timer.performWithDelay(transitionRef.delay, function()            
+            -- First make callbacks that might affect params
+            if (transitionRef.onStart) then
+                transitionRef.onStart(target)
+            end
+            if (transitionRef.onIterationStart) then
+                transitionRef.onIterationStart(target, params)
+            end
+            
+            -- Then get the start/end values
+            transitionRef.startValue = transitionExtension.getStartValue(target, params)
+            transitionRef.endValue = transitionExtension.getEndValue(target, params)
+            
+            -- Finally, flag the transition ref as started to allow shared enter frame listener to run it
+            transitionRef.lastFrameTimestamp = system.getTimer()
+            transitionRef.isStarted = true
+        end)
     end
-    
-    addTransition(transitionRef)
-    
-    -- Start transition
-    timer.performWithDelay(transitionRef.delay, function()            
-        -- First make callbacks that might affect params
-        if (transitionRef.onStart) then
-            transitionRef.onStart(target)
-        end
-        if (transitionRef.onIterationStart) then
-            transitionRef.onIterationStart(target, params)
-        end
-        
-        -- Then get the start/end values
-        transitionRef.startValue = transitionExtension.getStartValue(target, params)
-        transitionRef.endValue = transitionExtension.getEndValue(target, params)
-        
-        -- Finally, flag the transition ref as started to allow shared enter frame listener to run it
-        transitionRef.lastFrameTimestamp = system.getTimer()
-        transitionRef.isStarted = true
-    end)
     
     return transitionRef
 end
