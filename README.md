@@ -425,6 +425,7 @@ transition.zRotate(displayObject, {
     shading = true, -- Applies a shading effect as the object rotates away
     shadingDarknessIntensity = 0.75, -- A value between 0-1. Default = 1. Requires shading=true.
     shadingBrightnessIntensity = 0.25, -- A value between 0-1. Default = 0. Requires shading=true.
+    static = false, -- Optional, default = false. Set to true to apply final rotation immediately without doing an actual transition. If static=true, params like time, iterations etcetera have no effect.
 })
 ```
 
