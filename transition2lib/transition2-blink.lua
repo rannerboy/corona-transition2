@@ -37,6 +37,7 @@ return {
         params.iterations = 0
         params.iterationDelay = nil
         params.time = params.time or 1000
+        params.static = false
         
         return params
     end,

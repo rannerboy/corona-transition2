@@ -95,6 +95,7 @@ return {
         params.time = params.time or 500
         params.transition = params.transition or easing.linear
         params.delta = (params.delta == true)            
+        params.static = false
     
         return params
     end,

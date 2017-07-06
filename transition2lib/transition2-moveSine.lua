@@ -60,6 +60,7 @@ return {
         params.startDegreesY = params.startDegreesY and (params.startDegreesY % 360) or 0
         params.radiusX = params.radiusX or 0
         params.radiusY = params.radiusY or 0
+        params.static = false
  
         return params
     end,

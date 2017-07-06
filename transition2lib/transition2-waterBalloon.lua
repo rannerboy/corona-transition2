@@ -61,6 +61,8 @@ return {
         params.originalXScale = displayObject.xScale
         params.originalYScale = displayObject.yScale
         
+        params.static = false
+        
         return params
     end
 }

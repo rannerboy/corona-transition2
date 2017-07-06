@@ -34,6 +34,7 @@ return {
         params = params or {}
                 
         params.delta = false
+        params.static = false
         
         return params
     end,

@@ -28,13 +28,15 @@ return {
         displayObject.y = value
     end,
  
-    getParams = function(displayObject, params)        
+    getParams = function(displayObject, params)   
+        params = params or {}
         params.transition = easing.outSine
         params.transitionReverse = easing.inSine
         params.reverse = true
         
         -- params.time specifies the time for a full bounce cycle, so we just divide by 2 to get time for half cycle
         params.time = (params.time ~= nil) and (params.time/2) or 500
+        params.static = false
         
         return params
     end,

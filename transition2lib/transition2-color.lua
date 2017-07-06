@@ -49,6 +49,8 @@ return {
     end,
     
     getParams = function(displayObject, params)
+        params = params or {}
+        params.static = false
         return params
     end
 }

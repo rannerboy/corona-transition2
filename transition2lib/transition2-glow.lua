@@ -36,6 +36,7 @@ glow.getParams = function(displayObject, params)
     params.iterations = 0
     params.transition = easing.inOutSine
     params.transitionReverse = easing.inOutSine
+    params.static = false
     
     -- Pass the glow specific params into the getParams function of the color transition
     return color.getParams(displayObject, params)

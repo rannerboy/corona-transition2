@@ -117,6 +117,9 @@ return {
                 customOnIterationComplete(displayObject)
             end
         end
+        
+        params.static = false
+        
         return params
     end,
     
