@@ -41,6 +41,6 @@ local transition2 = createTransition2({
 
 -- Dissolve is handled as a special case since it has a completely different signature than other transition functions
 -- It is only implemented because of backwards compatibility with the transition library.
-transition2.dissolve = require("transition2-dissolve")(transition2)
+transition2.dissolve = require("transition2lib.transition2-dissolve")(transition2)
 
 return transition2
