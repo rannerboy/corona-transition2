@@ -44,8 +44,8 @@ return function(transition2)
         local moveVertical
         moveVertical = function()
             transition2.moveSine(obj, {
-                time = time, --(verticalDirection == "down") and time or time/1.5,
-                radiusY = (verticalDirection == "down") and radiusY or (radiusY * math.random(5, 20) / 100),
+                time = (verticalDirection == "down") and time or time/3,
+                radiusY = (verticalDirection == "down") and radiusY or (radiusY * math.random(0, 10) / 100),
                 deltaDegreesY = 180,
                 startDegreesY = (verticalDirection == "down") and 270 or 90,
                 iterations = 1,
@@ -67,6 +67,7 @@ return function(transition2)
                     end                   
                     
                     verticalDirection = (verticalDirection == "down") and "up" or "down"
+                    
                     moveVertical()
                 end
             })
@@ -83,8 +84,7 @@ return function(transition2)
                 recalculateOnIteration = true,
                 onIterationComplete = function(obj, params)                    
                     
-                    -- Increase radiusX during slow start
-                    -- FIXME: BUG! Since time is not the same for vertical and horizontal cycle, the max radiusX will never be reached here
+                    -- Increase radiusX during slow start                    
                     if (isSlowStartHorizontal) then
                         radiusX = radiusX * math.pow(SLOW_START_INCREASE_FACTOR, 2)
                         print(radiusX)
