@@ -16,9 +16,9 @@ transition.moveSine(displayObject, {
     iterations = 0, -- Loop forever
     
     --
-    -- forceCentering    
-    -- true (default): Display object will always start moving from its current position, regardless of startDegreesX/Y
-    -- false: If set to false the sine path will always be centered around the display object. This will cause the display object to "jump" into start position if startDegreesX/Y are not multiples of 180.
+    -- forceCentering can be a bit tricky to understand but is necessary in some cases as it controls how the sine path is positioned relative to the display object.
+    -- false (default): The display object will always start moving from its current position, regardless of startDegreesX/Y.
+    -- true: The sine path will always be centered around the display object. This will cause the display object to "jump" into start position if startDegreesX/Y are not multiples of 180.
     --
     forceCentering = true,
 })
@@ -86,13 +86,13 @@ return {
         if (params.recalculateOnIteration) then
             local wrappedIterationComplete = params.onIterationComplete
             params.onIterationComplete = function(obj, params)            
-                params.startX = obj.x
-                params.startY = obj.y
-                params.startOffset = calculateStartOffset(params)
-                
                 if (wrappedIterationComplete) then
                     wrappedIterationComplete(obj, params)
                 end
+                
+                params.startX = obj.x
+                params.startY = obj.y
+                params.startOffset = calculateStartOffset(params)
             end            
         end
  
