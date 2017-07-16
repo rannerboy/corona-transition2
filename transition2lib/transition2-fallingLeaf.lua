@@ -37,7 +37,7 @@ return function(transition2)
         
         -- State variables
         local verticalDirection = "down"        
-        local horizontalDirection = "right"
+        local horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
         local isSlowStart = (params.disableSlowStart ~= true)
         
         local moveVertical
@@ -89,13 +89,13 @@ return function(transition2)
                             radiusX = maxRadiusX
                         end        
                     end
-                    
+                                        
                     if (randomHorizontalDirection) then
                         horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
                     else
                         horizontalDirection = (horizontalDirection == "left") and "right" or "left"
                     end
-                    
+                                        
                     moveHorizontal()
                 end
             })
