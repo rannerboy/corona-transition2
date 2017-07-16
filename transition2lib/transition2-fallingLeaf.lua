@@ -26,7 +26,7 @@ return function(transition2)
         local SLOW_START_INCREASE_FACTOR = 1.2
         
         -- Params decoding
-        local maxRadiusY = params.deltaY or 150
+        local maxRadiusY = params.deltaY or 200
         local maxRadiusX = params.deltaX or 200
         local radiusY = params.disableSlowStart and maxRadiusY or (SLOW_START_MIN_FACTOR * maxRadiusY)
         local radiusX = params.disableSlowStart and maxRadiusX or (SLOW_START_MIN_FACTOR * maxRadiusX)        
@@ -64,7 +64,9 @@ return function(transition2)
                             time = maxTime
                         end 
                         --]]
-                    end                   
+                    end         
+                    
+                    -- FIXME: Add randomization to radiusY
                     
                     verticalDirection = (verticalDirection == "down") and "up" or "down"
                     
@@ -86,14 +88,16 @@ return function(transition2)
                     
                     -- Increase radiusX during slow start                    
                     if (isSlowStartHorizontal) then
-                        radiusX = radiusX * math.pow(SLOW_START_INCREASE_FACTOR, 2)
-                        print(radiusX)
+                        -- FIXME: Come up with better forumla for increasing radiusX?
+                        radiusX = radiusX * math.pow(SLOW_START_INCREASE_FACTOR, 2)                        
                         if (radiusX >= maxRadiusX) then
                             isSlowStartHorizontal = false
                             radiusX = maxRadiusX
                         end        
                     end
-                                        
+                            
+                    -- FIXME: Add randomization to radiusX
+                    
                     if (randomHorizontalDirection) then
                         horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
                     else
@@ -123,6 +127,7 @@ return function(transition2)
         
         -- Apply zRotate
         if (zRotationEnabled) then
+            -- FIXME: Allow a separate zRotate params object to be passed in to fallingLeaf() to customize the zRotation and overwrite default settings.
             transition.zRotate(obj, {
                 time = time,                 
                 reverse = true,
