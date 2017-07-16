@@ -26,8 +26,8 @@ return function(transition2)
         local SLOW_START_INCREASE_FACTOR = 1.2
         
         -- Params decoding
-        local maxRadiusY = params.deltaY or 200
-        local maxRadiusX = params.deltaX or 300
+        local maxRadiusY = params.deltaY or 150
+        local maxRadiusX = params.deltaX or 200
         local radiusY = params.disableSlowStart and maxRadiusY or (SLOW_START_MIN_FACTOR * maxRadiusY)
         local radiusX = params.disableSlowStart and maxRadiusX or (SLOW_START_MIN_FACTOR * maxRadiusX)        
         local time = (params.time or 1500)
@@ -38,23 +38,24 @@ return function(transition2)
         -- State variables
         local verticalDirection = "down"        
         local horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
-        local isSlowStart = (params.disableSlowStart ~= true)
+        local isSlowStartVertical = (params.disableSlowStart ~= true)
+        local isSlowStartHorizontal = (params.disableSlowStart ~= true)
         
         local moveVertical
         moveVertical = function()
             transition2.moveSine(obj, {
-                time = (verticalDirection == "down") and time or time/1.5,
-                radiusY = (verticalDirection == "down") and radiusY or (radiusY * math.random(0, 10) / 100),
+                time = time, --(verticalDirection == "down") and time or time/1.5,
+                radiusY = (verticalDirection == "down") and radiusY or (radiusY * math.random(5, 20) / 100),
                 deltaDegreesY = 180,
                 startDegreesY = (verticalDirection == "down") and 270 or 90,
                 iterations = 1,
                 recalculateOnIteration = true,
                 onIterationComplete = function(obj, params) 
                     -- Increase radiusY during slow start
-                    if (isSlowStart) then
+                    if (isSlowStartVertical) then
                         radiusY = radiusY * SLOW_START_INCREASE_FACTOR                        
                         if (radiusY >= maxRadiusY) then
-                            isSlowStart = false
+                            isSlowStartVertical = false
                             radiusY = maxRadiusY
                         end        
                         --[[
@@ -84,10 +85,11 @@ return function(transition2)
                     
                     -- Increase radiusX during slow start
                     -- FIXME: BUG! Since time is not the same for vertical and horizontal cycle, the max radiusX will never be reached here
-                    if (isSlowStart) then
-                        radiusX = radiusX * SLOW_START_INCREASE_FACTOR   
+                    if (isSlowStartHorizontal) then
+                        radiusX = radiusX * math.pow(SLOW_START_INCREASE_FACTOR, 2)
                         print(radiusX)
-                        if (radiusX >= maxRadiusX) then                            
+                        if (radiusX >= maxRadiusX) then
+                            isSlowStartHorizontal = false
                             radiusX = maxRadiusX
                         end        
                     end
