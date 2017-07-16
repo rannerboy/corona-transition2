@@ -29,6 +29,13 @@ Markus Ranner 2017
 
 local utils = require("transition2lib.utils")
 
+local function calculateStartOffset(params)
+    return {
+        x = params.forceCentering and 0 or (params.radiusX * math.sin(utils.toRadians(params.startDegreesX))),
+        y = params.forceCentering and 0 or (params.radiusY * math.sin(utils.toRadians(params.startDegreesY))),
+    }
+end
+
 return {
     getStartValue = function(displayObject, params)        
         return {
@@ -49,16 +56,12 @@ return {
         
         if (params.radiusX ~= 0) then
             local offsetX = (params.radiusX * math.sin(utils.toRadians(degrees.x)))            
-            -- FIXME: Inefficient to calculate start offset for every value. 
-            local startOffsetX = params.forceCentering and 0 or (params.radiusX * math.sin(utils.toRadians(params.startDegreesX)))
-            displayObject.x = params.startX + offsetX
+            displayObject.x = params.startX + offsetX - params.startOffset.x
         end
         
         if (params.radiusY ~= 0) then
             local offsetY = (params.radiusY * math.sin(utils.toRadians(degrees.y)))
-            -- FIXME: Inefficient to calculate start offset for every value. 
-            local startOffsetY = params.forceCentering and 0 or (params.radiusY * math.sin(utils.toRadians(params.startDegreesY)))
-            displayObject.y = params.startY + offsetY - startOffsetY
+            displayObject.y = params.startY + offsetY - params.startOffset.y
         end
     end,
  
@@ -77,12 +80,15 @@ return {
         params.radiusY = params.radiusY or 0
         params.static = false
         
-        -- If we want to recalculate new position for each iteration we must also change the calculated start X/Y values
+        params.startOffset = calculateStartOffset(params)
+        
+        -- If we want to recalculate new position for each iteration we must also change the calculated start values
         if (params.recalculateOnIteration) then
             local wrappedIterationComplete = params.onIterationComplete
             params.onIterationComplete = function(obj, params)            
                 params.startX = obj.x
                 params.startY = obj.y
+                params.startOffset = calculateStartOffset(params)
                 
                 if (wrappedIterationComplete) then
                     wrappedIterationComplete(obj, params)
