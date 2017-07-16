@@ -27,7 +27,7 @@ return function(transition2)
         
         -- Params decoding
         local maxRadiusY = params.deltaY or 200
-        local maxRadiusX = params.deltaX or 200
+        local maxRadiusX = params.deltaX or 300
         local radiusY = params.disableSlowStart and maxRadiusY or (SLOW_START_MIN_FACTOR * maxRadiusY)
         local radiusX = params.disableSlowStart and maxRadiusX or (SLOW_START_MIN_FACTOR * maxRadiusX)        
         local time = (params.time or 1500)
@@ -43,7 +43,7 @@ return function(transition2)
         local moveVertical
         moveVertical = function()
             transition2.moveSine(obj, {
-                time = (verticalDirection == "down") and time or time/2,
+                time = (verticalDirection == "down") and time or time/1.5,
                 radiusY = (verticalDirection == "down") and radiusY or (radiusY * math.random(0, 10) / 100),
                 deltaDegreesY = 180,
                 startDegreesY = (verticalDirection == "down") and 270 or 90,
@@ -83,8 +83,10 @@ return function(transition2)
                 onIterationComplete = function(obj, params)                    
                     
                     -- Increase radiusX during slow start
+                    -- FIXME: BUG! Since time is not the same for vertical and horizontal cycle, the max radiusX will never be reached here
                     if (isSlowStart) then
-                        radiusX = radiusX * SLOW_START_INCREASE_FACTOR                       
+                        radiusX = radiusX * SLOW_START_INCREASE_FACTOR   
+                        print(radiusX)
                         if (radiusX >= maxRadiusX) then                            
                             radiusX = maxRadiusX
                         end        
@@ -127,6 +129,8 @@ return function(transition2)
                 onIterationStart = function(obj, params) 
                     params.degrees = math.random(-360, 360)
                 end,
+                shadingDarknessIntensity = 0.5,
+                shadingBrightnessIntensity = 0,
                 recalculateOnIteration = true,
             })
         end
