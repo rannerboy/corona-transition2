@@ -39,7 +39,11 @@ local transition2 = createTransition2({
     moveBy = require("transition2lib.transition2-moveBy"),    
 })
 
--- Dissolve is handled as a special case since it has a completely different signature than other transition functions
+
+-- Transitions that use one or more other transition functions and contain special logic
+transition2.fallingLeaf = require("transition2-fallingLeaf")(transition2)
+
+-- Dissolve is the only legacy function that is handled as a special case since it has a completely different signature than other transition functions.
 -- It is only implemented because of backwards compatibility with the transition library.
 transition2.dissolve = require("transition2lib.transition2-dissolve")(transition2)
 
