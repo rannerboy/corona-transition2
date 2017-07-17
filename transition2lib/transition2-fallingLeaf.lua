@@ -4,11 +4,10 @@ Falling leaf
 TODO: Add comments and example 
 
 transition.fallingLeaf(displayObject, {
-    time = 2000, -- Default = 1500. The time for one vertical iteration.
     speed = 0.25, -- A value between 0-1. Default = 0.5.
+    
     deltaX = 150, -- Default = 200
     randomHorizontalDirection = true,
-    disableSlowStart = true, -- Default = true. A slow start means that deltaX/Y will be gradually increased from 0 to specified param values
     rotate = false, -- Default = true. Applies rotation to the object.
     zRotate = false, -- Default = true. Applies zRotate transition with shading.
 })
@@ -32,15 +31,25 @@ local function getValidSpeed(speed)
     end    
 end
 
-local function getTargetDeltaY(speed)
+local function getBaseDeltaY(speed)
     local MIN_DELTA_Y = 25
-    local MAX_DELTA_Y = 500
+    local MAX_DELTA_Y = 400
     
     local targetDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * speed) + MIN_DELTA_Y
     
     print("targetDeltaY = " .. targetDeltaY)
     
     return targetDeltaY
+end
+
+local function getBaseDeltaX(windIntensity)
+    -- FIXME
+    return 100
+end
+
+local function getValidWindIntensity(windIntensity)
+    -- FIXME
+    return 0.5
 end
 
 local function getTime(speed)
@@ -60,19 +69,15 @@ return function(transition2)
         -- FIXME: Handle all onX functions and pass them on to other transition functions
         -- FIXME: Handle cancelWhen function and pass it on
         
-        local SLOW_START_MIN_FACTOR = 0.5
-        local SLOW_START_INCREASE_FACTOR = 1.2        
-        
         -- Params decoding
         local speed = getValidSpeed(params.speed)
-        local radiusY = getTargetDeltaY(speed)        
+        local baseDeltaY = getBaseDeltaY(speed)        
         
-        local radiusX = params.deltaX or 200
-        
-        --local radiusY = params.disableSlowStart and maxRadiusY or (SLOW_START_MIN_FACTOR * maxRadiusY)
-        --local radiusX = params.disableSlowStart and maxRadiusX or (SLOW_START_MIN_FACTOR * maxRadiusX)        
+        local windIntensity = getValidWindIntensity(params.windIntensity)
+        local baseDeltaX = getBaseDeltaX(windIntensity)
         
         local time = getTime(speed)
+        
         local randomHorizontalDirection = params.randomHorizontalDirection or false
         local rotationEnabled = (params.rotate ~= false)
         local zRotationEnabled = (params.zRotate ~= false)
@@ -80,34 +85,26 @@ return function(transition2)
         -- State variables
         local verticalDirection = "down"        
         local horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
-        --local isSlowStartVertical = (params.disableSlowStart ~= true)
-        --local isSlowStartHorizontal = (params.disableSlowStart ~= true)
         
         local moveVertical
         moveVertical = function()
+            
+            -- Randomize radiusY slightly
+            local radiusY = baseDeltaY * (math.random(80, 120) / 100)
+            if (verticalDirection == "up") then
+                -- If going up, then reduce radius to a fraction of base radius
+                radiusY = radiusY * (math.random(0, 10) / 100)
+            end
+            
             transition2.moveSine(obj, {
                 time = (verticalDirection == "down") and time or time/3,
-                radiusY = (verticalDirection == "down") and radiusY or (radiusY * math.random(0, 10) / 100),
+                radiusY = radiusY,
                 deltaDegreesY = 180,
                 startDegreesY = (verticalDirection == "down") and 270 or 90,
-                iterations = 1,
-                recalculateOnIteration = true,
-                onIterationComplete = function(obj, params) 
-                    -- Increase radiusY during slow start
-                    --[[
-                    if (isSlowStartVertical) then
-                        radiusY = radiusY * SLOW_START_INCREASE_FACTOR                        
-                        if (radiusY >= maxRadiusY) then
-                            isSlowStartVertical = false
-                            radiusY = maxRadiusY
-                        end        
-                    end 
-                    --]]
-                    
-                    -- FIXME: Add randomization to radiusY
-                    
-                    verticalDirection = (verticalDirection == "down") and "up" or "down"
-                    
+                iterations = 1,                
+                onIterationComplete = function(obj, params)                     
+                    -- Flip direction and start new moveSine transition
+                    verticalDirection = (verticalDirection == "down") and "up" or "down"                    
                     moveVertical()
                 end
             })
@@ -115,26 +112,16 @@ return function(transition2)
         
         local moveHorizontal
         moveHorizontal = function()
+            
+            local radiusX = baseDeltaX
+            
             transition2.moveSine(obj, {
                 time = time * 2 * math.random(5, 20) / 10,
                 radiusX = radiusX,
                 deltaDegreesX = 180,
                 startDegreesX = (horizontalDirection == "right") and 270 or 90,
-                iterations = 1,
-                recalculateOnIteration = true,
+                iterations = 1,                
                 onIterationComplete = function(obj, params)                    
-                    
-                    -- Increase radiusX during slow start                    
-                    --[[
-                    if (isSlowStartHorizontal) then
-                        -- FIXME: Come up with better forumla for increasing radiusX?
-                        radiusX = radiusX * math.pow(SLOW_START_INCREASE_FACTOR, 2)                        
-                        if (radiusX >= maxRadiusX) then
-                            isSlowStartHorizontal = false
-                            radiusX = maxRadiusX
-                        end        
-                    end
-                    --]]    
                     -- FIXME: Add randomization to radiusX
                     
                     if (randomHorizontalDirection) then
