@@ -5,7 +5,7 @@ TODO: Add comments and example
 
 transition.fallingLeaf(displayObject, {
     time = 2000, -- Default = 1500. The time for one vertical iteration.
-    deltaY = 100, -- Default = 200
+    speed = 0.25, -- A value between 0-1. Default = 0.5.
     deltaX = 150, -- Default = 200
     randomHorizontalDirection = true,
     disableSlowStart = true, -- Default = true. A slow start means that deltaX/Y will be gradually increased from 0 to specified param values
@@ -16,6 +16,44 @@ transition.fallingLeaf(displayObject, {
 Markus Ranner 2017
 
 --]]
+
+local DEFAULT_SPEED = 0.5
+local DEFAULT_TIME = 1500
+
+local function getValidSpeed(speed)
+    if (speed == nil) then
+        return DEFAULT_SPEED
+    elseif (speed < 0) then
+        return 0
+    elseif(speed > 1) then
+        return 1
+    else
+        return speed
+    end    
+end
+
+local function getTargetDeltaY(speed)
+    local MIN_DELTA_Y = 25
+    local MAX_DELTA_Y = 500
+    
+    local targetDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * speed) + MIN_DELTA_Y
+    
+    print("targetDeltaY = " .. targetDeltaY)
+    
+    return targetDeltaY
+end
+
+local function getTime(speed)
+    local MIN_TIME = 1000
+    local MAX_TIME = 3000
+    
+    -- Time will increase as speed increases
+    local time = ((MAX_TIME - MIN_TIME) * speed) + MIN_TIME
+    print("time = " .. time)
+    
+    return time
+end
+
 return function(transition2)
     return function (obj, params)
         
@@ -23,14 +61,18 @@ return function(transition2)
         -- FIXME: Handle cancelWhen function and pass it on
         
         local SLOW_START_MIN_FACTOR = 0.5
-        local SLOW_START_INCREASE_FACTOR = 1.2
+        local SLOW_START_INCREASE_FACTOR = 1.2        
         
         -- Params decoding
-        local maxRadiusY = params.deltaY or 200
-        local maxRadiusX = params.deltaX or 200
-        local radiusY = params.disableSlowStart and maxRadiusY or (SLOW_START_MIN_FACTOR * maxRadiusY)
-        local radiusX = params.disableSlowStart and maxRadiusX or (SLOW_START_MIN_FACTOR * maxRadiusX)        
-        local time = (params.time or 1500)
+        local speed = getValidSpeed(params.speed)
+        local radiusY = getTargetDeltaY(speed)        
+        
+        local radiusX = params.deltaX or 200
+        
+        --local radiusY = params.disableSlowStart and maxRadiusY or (SLOW_START_MIN_FACTOR * maxRadiusY)
+        --local radiusX = params.disableSlowStart and maxRadiusX or (SLOW_START_MIN_FACTOR * maxRadiusX)        
+        
+        local time = getTime(speed)
         local randomHorizontalDirection = params.randomHorizontalDirection or false
         local rotationEnabled = (params.rotate ~= false)
         local zRotationEnabled = (params.zRotate ~= false)
@@ -38,8 +80,8 @@ return function(transition2)
         -- State variables
         local verticalDirection = "down"        
         local horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
-        local isSlowStartVertical = (params.disableSlowStart ~= true)
-        local isSlowStartHorizontal = (params.disableSlowStart ~= true)
+        --local isSlowStartVertical = (params.disableSlowStart ~= true)
+        --local isSlowStartHorizontal = (params.disableSlowStart ~= true)
         
         local moveVertical
         moveVertical = function()
@@ -52,19 +94,15 @@ return function(transition2)
                 recalculateOnIteration = true,
                 onIterationComplete = function(obj, params) 
                     -- Increase radiusY during slow start
+                    --[[
                     if (isSlowStartVertical) then
                         radiusY = radiusY * SLOW_START_INCREASE_FACTOR                        
                         if (radiusY >= maxRadiusY) then
                             isSlowStartVertical = false
                             radiusY = maxRadiusY
                         end        
-                        --[[
-                        time = time * 1.1
-                        if (time >= maxTime) then
-                            time = maxTime
-                        end 
-                        --]]
-                    end         
+                    end 
+                    --]]
                     
                     -- FIXME: Add randomization to radiusY
                     
@@ -87,6 +125,7 @@ return function(transition2)
                 onIterationComplete = function(obj, params)                    
                     
                     -- Increase radiusX during slow start                    
+                    --[[
                     if (isSlowStartHorizontal) then
                         -- FIXME: Come up with better forumla for increasing radiusX?
                         radiusX = radiusX * math.pow(SLOW_START_INCREASE_FACTOR, 2)                        
@@ -95,7 +134,7 @@ return function(transition2)
                             radiusX = maxRadiusX
                         end        
                     end
-                            
+                    --]]    
                     -- FIXME: Add randomization to radiusX
                     
                     if (randomHorizontalDirection) then
