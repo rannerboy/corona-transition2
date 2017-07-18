@@ -25,6 +25,7 @@ local DEFAULT_VERTICAL_INTENSITY = 0.5
 local DEFAULT_HORIZONTAL_INTENSITY = 0.5
 local DEFAULT_ROTATION_INTENSITY = 0.5
 local DEFAULT_HORIZONTAL_DIRECTION_OPTION = "alternate"
+local DEFAULT_RANDOMNESS = 0.5
 
 local function getBaseDeltaY(verticalIntensity)
     local MIN_DELTA_Y = 25
@@ -113,23 +114,26 @@ return function(transition2)
         
         local horizontalDirectionOption = getValidHorizontalDirectionOption(params.horizontalDirection)
         
+        local randomness = utils.getValidIntervalValue(params.randomness, 0, 1, DEFAULT_RANDOMNESS)
+        
         -- State variables
         local verticalDirection = "down"    
         local horizontalDirection = getInitialHorizontalDirection(horizontalDirectionOption)
-        
+                
         local moveVertical
         moveVertical = function()
             
-            -- Randomize radiusY slightly
-            -- FIXME: Make randomization customizable in params
-            local radiusY = baseDeltaY * (math.random(80, 120) / 100)
+            -- Randomize radiusY by at most 30%
+            local radiusY = baseDeltaY + (math.random(-30, 30) / 100 * baseDeltaY * randomness)
+            print("radiusY = " .. radiusY)
             if (verticalDirection == "up") then
-                -- If going up, then reduce radius to a fraction of base radius
-                radiusY = radiusY * (math.random(0, 10) / 100)
+                -- If going up, then reduce radius to a fraction of base radius (0-10%)
+                local randomFactor = randomness * (math.random(-5, 5) / 100)                
+                radiusY = radiusY * (0.05 + randomFactor)
             end
             
             transition2.moveSine(obj, {
-                time = (verticalDirection == "down") and time or time/2.5,
+                time = (verticalDirection == "down") and time or time/2.5, -- Shorter time when going up makes the movement look a lot better. 
                 radiusY = radiusY,
                 deltaDegreesY = 180,
                 startDegreesY = (verticalDirection == "down") and 270 or 90,
