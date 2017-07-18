@@ -14,6 +14,8 @@ transition.fallingLeaf(displayObject, {
     
     horizontalDirection, = One of {"alternate", "right", "left", "random" }. Default = "alternate".
     
+    randomness = 0.75, -- A value between 0-1. A larger value means more randomness. Default = 0.5.
+    
     rotate = false, -- Default = true. Applies rotation to the object.
     zRotate = false, -- Default = true. Applies zRotate transition with specified zRotateParams.
     rotationIntensity = 0.75, -- A value between 0-1. Default = 0.5. Applies to both 2d rotation and zRotate.
