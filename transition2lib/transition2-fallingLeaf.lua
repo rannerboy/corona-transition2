@@ -154,10 +154,13 @@ return function(transition2)
                     verticalDirection = (verticalDirection == "down") and "up" or "down"                    
                     moveVertical()
                 end,
-                cancelWhen = params.cancelWhen,
-                -- Note! The onCancel will only be applied here and not to any other transition functions. This to avoid calling it more than once.
-                onCancel = params.onCancel,
+                cancelWhen = params.cancelWhen,                
                 tag = params.tag,
+                
+                -- Note! These onX functions will only be applied here and not to any other transition functions. This to avoid calling them more than once.
+                onCancel = params.onCancel,
+                onPause = params.onPause,
+                onResume = params.onResume,                
             })
         end
         
