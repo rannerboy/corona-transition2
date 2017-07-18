@@ -20,8 +20,10 @@ Markus Ranner 2017
 local utils = require("transition2lib.utils")
 
 local DEFAULT_SPEED = 0.25
-local DEFAULT_INTENSITY = 0.5
+local DEFAULT_VERTICAL_INTENSITY = 0.5
+local DEFAULT_HORIZONTAL_INTENSITY = 0.5
 
+-- FIXME: Should only be affected by vertical intensity, not speed
 local function getBaseDeltaY(speed)
     local MIN_DELTA_Y = 25
     local MAX_DELTA_Y = 500
@@ -31,11 +33,11 @@ local function getBaseDeltaY(speed)
     return baseDeltaY
 end
 
-local function getBaseDeltaX(intensity)
+local function getBaseDeltaX(horizontalIntensity)
     local MIN_DELTA_X = 25
     local MAX_DELTA_X = 300
     
-    local baseDeltaX = ((MAX_DELTA_X - MIN_DELTA_X) * intensity) + MIN_DELTA_X
+    local baseDeltaX = ((MAX_DELTA_X - MIN_DELTA_X) * horizontalIntensity) + MIN_DELTA_X
     
     return baseDeltaX
 end
@@ -60,8 +62,8 @@ return function(transition2)
         local speed = utils.getValidIntervalValue(params.speed, 0, 1, DEFAULT_SPEED)
         local baseDeltaY = getBaseDeltaY(speed)        
         
-        local intensity = utils.getValidIntervalValue(params.intensity, 0, 1, DEFAULT_INTENSITY)
-        local baseDeltaX = getBaseDeltaX(intensity)
+        local horizontalIntensity = utils.getValidIntervalValue(params.horizontalIntensity, 0, 1, DEFAULT_HORIZONTAL_INTENSITY)
+        local baseDeltaX = getBaseDeltaX(horizontalIntensity)
         
         local time = getTime(speed)
         
@@ -134,8 +136,8 @@ return function(transition2)
             transition.to(obj, {
                 time = time,
                 onIterationStart = function(obj, params)
-                    -- FIXME: rotation should depend on intensity
-                    local rotationDelta = 90 + 720 * (math.random(1,2) == 1 and 1 or -1) * intensity
+                    -- FIXME: rotation should depend on rotationIntensity
+                    local rotationDelta = 90 + 720 * (math.random(1,2) == 1 and 1 or -1) * horizontalIntensity
                     
                     params.rotation = obj.rotation + rotationDelta
                 end,
