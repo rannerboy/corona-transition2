@@ -360,6 +360,51 @@ transition.color(displayObject, {
     iterations = 0, -- Repeat forever    
 })
 ```
+### fallingLeaf()
+
+A complex convenience function that makes a display object fall from it's current position towards the bottom of the screen in gentle, randomized sinus wave patterns. Trying to imitate the movement of a falling leaf blowing in the wind.
+
+NOTE! Does not return a transition handle, so you have to use the tag param if you want to be able to control (pause/cancel/resume) a single fallingLeaf transition.
+
+```lua
+transition.fallingLeaf(displayObject, {
+    delay = 500, -- Initial delay in ms. Default = 0.
+    speed = 0.25, -- A value between 0-1. Default = 0.5.
+    verticalIntensity = 0.75, -- A value between 0-1. Default = 0.5.
+    horizontalIntensity = 0.75, -- A value between 0-1. Default = 0.5.    
+    
+    horizontalDirection, = One of {"alternate", "right", "left", "random" }. Default = "alternate".
+    
+    randomness = 0.75, -- A value between 0-1. A larger value means more randomness. Default = 0.5.
+    
+    rotate = false, -- Default = true. Applies rotation to the object.
+    zRotate = false, -- Default = true. Applies zRotate transition with specified zRotateParams.
+    rotationIntensity = 0.75, -- A value between 0-1. Default = 0.5. Applies to both 2d rotation and zRotate.
+    zRotateParams = {
+        -- The parameters below are the only ones from zRotate that can be customized.
+        -- For default values and usage, see zRotate() docs.
+        shading = true, -- Default = true
+        shadingDarknessIntensity = 0.5,
+        shadingBrightnessIntensity = 1,
+        perspective = 0.5,
+        disableStrokeScaling = true,
+    },    
+    
+    tag = "leaf",
+    
+    cancelWhen = function() (leaf.y > (display.contentHeight + leaf.height)) end,
+    
+    onStart = function(target) print("onStart") end,    
+    onPause = function(target) print("onComplete") end,    
+    onResume = function(target) print("onResume") end,
+    onCancel = function(target) print("onCancel") end,
+    
+    -- NOTE! The following params are NOT supported
+    -- onComplete
+    -- onIterationStart
+    -- onIterationComplete
+})
+```
 
 ### glow()
 A convenience function that uses the color() transition to create a glowing effect.
