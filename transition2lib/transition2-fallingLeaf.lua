@@ -5,12 +5,13 @@ TODO: Add comments and example
 
 transition.fallingLeaf(displayObject, {
     speed = 0.25, -- A value between 0-1. Default = 0.5.
-    loopLength = 0.75, -- A value between 0-1. Default = 0.5.
-    intensity = 0.75, -- Affects horizontal movement and rotation. A value between 0-1. Default = 0.5.
+    verticalIntensity = 0.75, -- A value between 0-1. Default = 0.5.
+    horizontalIntensity = 0.75, -- A value between 0-1. Default = 0.5.    
     
     randomHorizontalDirection = true,
     rotate = false, -- Default = true. Applies rotation to the object.
     zRotate = false, -- Default = true. Applies zRotate transition with shading.
+    rotationIntensity = 0.75, -- A value between 0-1. Default = 0.5.
 })
 
 Markus Ranner 2017
@@ -19,9 +20,10 @@ Markus Ranner 2017
 
 local utils = require("transition2lib.utils")
 
-local DEFAULT_SPEED = 0.25
+local DEFAULT_SPEED = 0.5
 local DEFAULT_VERTICAL_INTENSITY = 0.5
 local DEFAULT_HORIZONTAL_INTENSITY = 0.5
+local DEFAULT_ROTATION_INTENSITY = 0.5
 
 local function getBaseDeltaY(verticalIntensity)
     local MIN_DELTA_Y = 25
@@ -29,7 +31,6 @@ local function getBaseDeltaY(verticalIntensity)
     
     local baseDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * (1 - verticalIntensity)) + MIN_DELTA_Y
         
-    print("baseDeltaY = " .. baseDeltaY)
     return baseDeltaY
 end
 
@@ -43,13 +44,21 @@ local function getBaseDeltaX(horizontalIntensity)
 end
 
 local function getTime(speed)
-    local MIN_TIME = 1000
-    local MAX_TIME = 3000
+    local MIN_TIME = 500
+    local MAX_TIME = 4000
     
     -- Time will increase as speed increases
-    local time = ((MAX_TIME - MIN_TIME) * speed) + MIN_TIME    
+    local time = ((MAX_TIME - MIN_TIME) * (1 - speed)) + MIN_TIME    
     
     return time
+end
+
+local function randomizeRotationDelta(rotationIntensity)
+    local rotationDirection = (math.random(1,2) == 1 and 1 or -1)
+    local minAngle = 90 + (rotationIntensity * 360)
+    local randomAngle = minAngle + (math.random(0, 360) * rotationIntensity)
+    local rotationDelta =  rotationDirection * randomAngle
+    return rotationDelta
 end
 
 return function(transition2)
@@ -69,12 +78,15 @@ return function(transition2)
         
         local time = getTime(speed)
         
-        local randomHorizontalDirection = params.randomHorizontalDirection or false
+        local rotationIntensity = utils.getValidIntervalValue(params.rotationIntensity, 0, 1, DEFAULT_ROTATION_INTENSITY)
         local rotationEnabled = (params.rotate ~= false)
         local zRotationEnabled = (params.zRotate ~= false)
         
+        local randomHorizontalDirection = params.randomHorizontalDirection or false        
+        
         -- State variables
-        local verticalDirection = "down"        
+        local verticalDirection = "down"    
+        -- FIXME: Initial value should depend on type of horizontal movement specified in params 
         local horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
         
         local moveVertical
@@ -89,7 +101,6 @@ return function(transition2)
             end
             
             transition2.moveSine(obj, {
-                -- FIXME: This time calculation doesn't feel very good
                 time = (verticalDirection == "down") and time or time/2.5,
                 radiusY = radiusY,
                 deltaDegreesY = 180,
@@ -134,14 +145,13 @@ return function(transition2)
         moveVertical()
         moveHorizontal()
                 
+        
+                
         if (rotationEnabled) then
             transition.to(obj, {
                 time = time,
                 onIterationStart = function(obj, params)
-                    -- FIXME: rotation should depend on rotationIntensity
-                    local rotationDelta = 90 + 720 * (math.random(1,2) == 1 and 1 or -1) * horizontalIntensity
-                    
-                    params.rotation = obj.rotation + rotationDelta
+                    params.rotation = obj.rotation + randomizeRotationDelta(rotationIntensity)
                 end,
                 iterations = 0,
                 reverse = true,
@@ -150,9 +160,8 @@ return function(transition2)
             })                    
         end
         
-        -- FIXME: zRotate speed should depend on intensity
         -- Apply zRotate
-        if (false and zRotationEnabled) then
+        if (zRotationEnabled) then
             -- FIXME: Allow a separate zRotate params object to be passed in to fallingLeaf() to customize the zRotation and overwrite default settings.
             transition.zRotate(obj, {
                 time = time,                 
@@ -160,11 +169,12 @@ return function(transition2)
                 iterations = 0,
                 shading = true, -- FIXME: Make it possible to disable shading
                 onIterationStart = function(obj, params) 
-                    params.degrees = math.random(-360, 360)
+                    params.degrees = randomizeRotationDelta(rotationIntensity)
                 end,
                 shadingDarknessIntensity = 0.5,
                 shadingBrightnessIntensity = 0,
                 recalculateOnIteration = true,
+                transition = easing.inOutSine,
             })
         end
     end
