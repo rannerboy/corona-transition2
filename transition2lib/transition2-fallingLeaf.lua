@@ -154,9 +154,10 @@ return function(transition2)
                     verticalDirection = (verticalDirection == "down") and "up" or "down"                    
                     moveVertical()
                 end,
-                cancelWhen = params.cancelWhen or nil,
+                cancelWhen = params.cancelWhen,
                 -- Note! The onCancel will only be applied here and not to any other transition functions. This to avoid calling it more than once.
-                onCancel = params.onCancel or nil,
+                onCancel = params.onCancel,
+                tag = params.tag,
             })
         end
         
@@ -180,7 +181,8 @@ return function(transition2)
                     horizontalDirection = getNextHorizontalDirection(horizontalDirection, horizontalDirectionOption)
                     moveHorizontal()
                 end,
-                cancelWhen = params.cancelWhen or nil,
+                cancelWhen = params.cancelWhen,
+                tag = params.tag,
             })
         end
         
@@ -199,7 +201,8 @@ return function(transition2)
                 reverse = true,
                 transition = easing.inOutSine,
                 recalculateOnIteration = true,
-                cancelWhen = params.cancelWhen or nil
+                cancelWhen = params.cancelWhen,
+                tag = params.tag,
             })                    
         end
         
@@ -221,7 +224,8 @@ return function(transition2)
                 disableStrokeScaling = zRotateParams.disableStrokeScaling,
                 recalculateOnIteration = true,
                 transition = easing.inOutSine,
-                cancelWhen = params.cancelWhen or nil
+                cancelWhen = params.cancelWhen,
+                tag = params.tag,
             })
         end
     end
