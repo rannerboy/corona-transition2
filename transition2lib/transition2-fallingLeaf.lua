@@ -8,7 +8,7 @@ transition.fallingLeaf(displayObject, {
     verticalIntensity = 0.75, -- A value between 0-1. Default = 0.5.
     horizontalIntensity = 0.75, -- A value between 0-1. Default = 0.5.    
     
-    randomHorizontalDirection = true,
+    horizontalDirection, = One of {"alternate", "right", "left", "random" }. Default = "alternate".
     rotate = false, -- Default = true. Applies rotation to the object.
     zRotate = false, -- Default = true. Applies zRotate transition with shading.
     rotationIntensity = 0.75, -- A value between 0-1. Default = 0.5.
@@ -24,6 +24,7 @@ local DEFAULT_SPEED = 0.5
 local DEFAULT_VERTICAL_INTENSITY = 0.5
 local DEFAULT_HORIZONTAL_INTENSITY = 0.5
 local DEFAULT_ROTATION_INTENSITY = 0.5
+local DEFAULT_HORIZONTAL_DIRECTION_OPTION = "alternate"
 
 local function getBaseDeltaY(verticalIntensity)
     local MIN_DELTA_Y = 25
@@ -61,6 +62,34 @@ local function randomizeRotationDelta(rotationIntensity)
     return rotationDelta
 end
 
+local function getValidHorizontalDirectionOption(option)
+    local validOptions = { left = true, right = true, alternate = true, random = true }
+    
+    if ((option == nil) or not validOptions[option]) then
+        return DEFAULT_HORIZONTAL_DIRECTION_OPTION
+    else
+        return option
+    end
+end
+
+local function getInitialHorizontalDirection(option)
+    if (option == "alternate" or option == "random") then
+        return (math.random(1, 2) == 1) and "left" or "right"
+    else
+        return option -- Always left or right
+    end
+end
+
+local function getNextHorizontalDirection(currentHorizontalDirection, option)
+    if (option == "alternate") then
+        return ((currentHorizontalDirection == "right") and "left" or "right")
+    elseif (option == "random") then
+        return (math.random(1, 2) == 1) and "left" or "right"
+    else
+        return currentHorizontalDirection -- Always left or right
+    end
+end
+
 return function(transition2)
     return function (obj, params)
         
@@ -82,12 +111,11 @@ return function(transition2)
         local rotationEnabled = (params.rotate ~= false)
         local zRotationEnabled = (params.zRotate ~= false)
         
-        local randomHorizontalDirection = params.randomHorizontalDirection or false        
+        local horizontalDirectionOption = getValidHorizontalDirectionOption(params.horizontalDirection)
         
         -- State variables
         local verticalDirection = "down"    
-        -- FIXME: Initial value should depend on type of horizontal movement specified in params 
-        local horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
+        local horizontalDirection = getInitialHorizontalDirection(horizontalDirectionOption)
         
         local moveVertical
         moveVertical = function()
@@ -129,14 +157,8 @@ return function(transition2)
                 startDegreesX = (horizontalDirection == "right") and 270 or 90,
                 iterations = 1,                
                 onIterationComplete = function(obj, params)                    
-                    -- FIXME: Allow four different settings: alternate(default)/left/right/random
-                    -- Calculate new direction of horizontal movement
-                    if (randomHorizontalDirection) then
-                        horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"
-                    else
-                        horizontalDirection = (horizontalDirection == "left") and "right" or "left"
-                    end
-                                        
+                    -- Calculate new direction of horizontal movement                    
+                    horizontalDirection = getNextHorizontalDirection(horizontalDirection, horizontalDirectionOption)
                     moveHorizontal()
                 end
             })
