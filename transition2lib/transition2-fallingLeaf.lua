@@ -4,6 +4,7 @@ Applies a falling leaf effect to a display object
 Example usage:
 
 transition.fallingLeaf(displayObject, {
+    delay = 500, -- Initial delay in ms. Default = 0.
     speed = 0.25, -- A value between 0-1. Default = 0.5.
     verticalIntensity = 0.75, -- A value between 0-1. Default = 0.5.
     horizontalIntensity = 0.75, -- A value between 0-1. Default = 0.5.    
@@ -188,48 +189,54 @@ return function(transition2)
                 tag = params.tag,
             })
         end
-        
-        moveVertical()
-        moveHorizontal()
                 
-        
-                
-        if (rotationEnabled) then
-            transition.to(obj, {
-                time = time,
-                onIterationStart = function(obj, params)
-                    params.rotation = obj.rotation + randomizeRotationDelta(rotationIntensity, randomness)
-                end,
-                iterations = 0,
-                reverse = true,
-                transition = easing.inOutSine,
-                recalculateOnIteration = true,
-                cancelWhen = params.cancelWhen,
-                tag = params.tag,
-            })                    
+        local function rotate()
+            if (rotationEnabled) then
+                transition.to(obj, {
+                    time = time,
+                    onIterationStart = function(obj, params)
+                        params.rotation = obj.rotation + randomizeRotationDelta(rotationIntensity, randomness)
+                    end,
+                    iterations = 0,
+                    reverse = true,
+                    transition = easing.inOutSine,
+                    recalculateOnIteration = true,
+                    cancelWhen = params.cancelWhen,
+                    tag = params.tag,
+                })                    
+            end
+            
+            -- Apply zRotate
+            if (zRotationEnabled) then            
+                transition.zRotate(obj, {
+                    time = time,                 
+                    reverse = true,
+                    iterations = 0,
+                    horizontal = math.random(1,2) == 1,
+                    shading = (zRotateParams.shading ~= false),
+                    onIterationStart = function(obj, params) 
+                        params.degrees = randomizeRotationDelta(rotationIntensity, randomness)
+                        params.horizontal = math.random(1,2) == 1
+                    end,
+                    shadingDarknessIntensity = zRotateParams.shadingDarknessIntensity,
+                    shadingBrightnessIntensity = zRotateParams.shadingBrightnessIntensity,
+                    perspective = zRotateParams.perspective,
+                    disableStrokeScaling = zRotateParams.disableStrokeScaling,
+                    recalculateOnIteration = true,
+                    transition = easing.inOutSine,
+                    cancelWhen = params.cancelWhen,
+                    tag = params.tag,
+                })
+            end
         end
         
-        -- Apply zRotate
-        if (zRotationEnabled) then            
-            transition.zRotate(obj, {
-                time = time,                 
-                reverse = true,
-                iterations = 0,
-                horizontal = math.random(1,2) == 1,
-                shading = (zRotateParams.shading ~= false),
-                onIterationStart = function(obj, params) 
-                    params.degrees = randomizeRotationDelta(rotationIntensity, randomness)
-                    params.horizontal = math.random(1,2) == 1
-                end,
-                shadingDarknessIntensity = zRotateParams.shadingDarknessIntensity,
-                shadingBrightnessIntensity = zRotateParams.shadingBrightnessIntensity,
-                perspective = zRotateParams.perspective,
-                disableStrokeScaling = zRotateParams.disableStrokeScaling,
-                recalculateOnIteration = true,
-                transition = easing.inOutSine,
-                cancelWhen = params.cancelWhen,
-                tag = params.tag,
-            })
-        end
+        timer.performWithDelay(params.delay or 0, function()
+            if (params.onStart) then
+                params.onStart(obj)
+            end
+            moveVertical()
+            moveHorizontal()
+            rotate()
+        end)
     end
 end
