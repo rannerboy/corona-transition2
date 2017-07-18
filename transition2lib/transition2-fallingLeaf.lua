@@ -55,10 +55,10 @@ local function getTime(speed)
     return time
 end
 
-local function randomizeRotationDelta(rotationIntensity)
+local function randomizeRotationDelta(rotationIntensity, randomness)
     local rotationDirection = (math.random(1,2) == 1 and 1 or -1)
-    local minAngle = 90 + (rotationIntensity * 360)
-    local randomAngle = minAngle + (math.random(0, 360) * rotationIntensity)
+    local minAngle = 90 + (rotationIntensity * 720)
+    local randomAngle = minAngle + ((180 + (math.random(-180, 180) * randomness)) * rotationIntensity)
     local rotationDelta =  rotationDirection * randomAngle
     return rotationDelta
 end
@@ -125,7 +125,7 @@ return function(transition2)
             
             -- Randomize radiusY by at most 30%
             local radiusY = baseDeltaY + (math.random(-30, 30) / 100 * baseDeltaY * randomness)
-            print("radiusY = " .. radiusY)
+            --print("radiusY = " .. radiusY)
             if (verticalDirection == "up") then
                 -- If going up, then reduce radius to a fraction of base radius (0-10%)
                 local randomFactor = randomness * (math.random(-5, 5) / 100)                
@@ -150,12 +150,13 @@ return function(transition2)
         moveHorizontal = function()
             
             -- Randomize radiusX quite a lot
-            -- FIXME: Make randomization customizable in params
-            local radiusX = baseDeltaX * (math.random(50, 150) / 100)            
+            local radiusX = baseDeltaX + (math.random(-50, 50) / 100 * baseDeltaX * randomness)            
+            --print("radiusX = " .. radiusX)
+            local randomizedTime = time * 1.5 * (1 + (math.random(-5, 5) / 10 * randomness))
+            --print("horizontal time = " .. randomizedTime)
             
             transition2.moveSine(obj, {
-                time = time * 1.5 * math.random(5, 15) / 10,
-                --time = time,
+                time = randomizedTime,
                 radiusX = radiusX,
                 deltaDegreesX = 180,
                 startDegreesX = (horizontalDirection == "right") and 270 or 90,
@@ -177,7 +178,7 @@ return function(transition2)
             transition.to(obj, {
                 time = time,
                 onIterationStart = function(obj, params)
-                    params.rotation = obj.rotation + randomizeRotationDelta(rotationIntensity)
+                    params.rotation = obj.rotation + randomizeRotationDelta(rotationIntensity, randomness)
                 end,
                 iterations = 0,
                 reverse = true,
@@ -196,7 +197,7 @@ return function(transition2)
                 horizontal = math.random(1,2) == 1,
                 shading = true, -- FIXME: Make it possible to disable shading
                 onIterationStart = function(obj, params) 
-                    params.degrees = randomizeRotationDelta(rotationIntensity)
+                    params.degrees = randomizeRotationDelta(rotationIntensity, randomness)
                     params.horizontal = math.random(1,2) == 1
                 end,
                 shadingDarknessIntensity = 0.5,
