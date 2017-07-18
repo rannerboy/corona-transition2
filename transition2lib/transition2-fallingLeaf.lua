@@ -23,13 +23,13 @@ local DEFAULT_SPEED = 0.25
 local DEFAULT_VERTICAL_INTENSITY = 0.5
 local DEFAULT_HORIZONTAL_INTENSITY = 0.5
 
--- FIXME: Should only be affected by vertical intensity, not speed
-local function getBaseDeltaY(speed)
+local function getBaseDeltaY(verticalIntensity)
     local MIN_DELTA_Y = 25
-    local MAX_DELTA_Y = 500
+    local MAX_DELTA_Y = 600
     
-    local baseDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * speed) + MIN_DELTA_Y
+    local baseDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * (1 - verticalIntensity)) + MIN_DELTA_Y
         
+    print("baseDeltaY = " .. baseDeltaY)
     return baseDeltaY
 end
 
@@ -60,7 +60,9 @@ return function(transition2)
         
         -- Params decoding
         local speed = utils.getValidIntervalValue(params.speed, 0, 1, DEFAULT_SPEED)
-        local baseDeltaY = getBaseDeltaY(speed)        
+        
+        local verticalIntensity = utils.getValidIntervalValue(params.verticalIntensity, 0, 1, DEFAULT_VERTICAL_INTENSITY)
+        local baseDeltaY = getBaseDeltaY(verticalIntensity)        
         
         local horizontalIntensity = utils.getValidIntervalValue(params.horizontalIntensity, 0, 1, DEFAULT_HORIZONTAL_INTENSITY)
         local baseDeltaX = getBaseDeltaX(horizontalIntensity)
