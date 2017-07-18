@@ -167,9 +167,11 @@ return function(transition2)
                 time = time,                 
                 reverse = true,
                 iterations = 0,
+                horizontal = math.random(1,2) == 1,
                 shading = true, -- FIXME: Make it possible to disable shading
                 onIterationStart = function(obj, params) 
                     params.degrees = randomizeRotationDelta(rotationIntensity)
+                    params.horizontal = math.random(1,2) == 1
                 end,
                 shadingDarknessIntensity = 0.5,
                 shadingBrightnessIntensity = 0,
