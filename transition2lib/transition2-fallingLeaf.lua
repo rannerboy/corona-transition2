@@ -1,6 +1,9 @@
 --[[
 Applies a falling leaf effect to a display object
 
+NOTE: fallingLeaf does not return any transition handle since there are actually several transitions going on.
+This means that pause(), resume() or cancel() can't be used with a transition ref as param. Using tags will work, for example transition.pause("leaf").
+
 Example usage:
 
 transition.fallingLeaf(displayObject, {
@@ -23,6 +26,20 @@ transition.fallingLeaf(displayObject, {
         perspective = 0.5,
         disableStrokeScaling = true,
     },    
+    
+    tag = "leaf",
+    
+    cancelWhen = function() (leaf.y > (display.contentHeight + leaf.height)) end,
+    
+    onStart = function(target) print("onStart") end,    
+    onPause = function(target) print("onComplete") end,    
+    onResume = function(target) print("onResume") end,
+    onCancel = function(target) print("onCancel") end,
+    
+    -- NOTE! The following params are NOT supported
+    -- onComplete
+    -- onIterationStart
+    -- onIterationComplete
 })
 
 Markus Ranner 2017
@@ -42,7 +59,7 @@ local function getBaseDeltaY(verticalIntensity)
     local MIN_DELTA_Y = 25
     local MAX_DELTA_Y = 600
     
-    local baseDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * (1 - verticalIntensity)) + MIN_DELTA_Y
+    local baseDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * verticalIntensity) + MIN_DELTA_Y
         
     return baseDeltaY
 end
@@ -104,9 +121,6 @@ end
 
 return function(transition2)
     return function (obj, params)
-        
-        -- FIXME: Handle all onX functions and pass them on to other transition functions
-        -- FIXME: Handle cancelWhen function and pass it on
         
         -- Params decoding
         local speed = utils.getValidIntervalValue(params.speed, 0, 1, DEFAULT_SPEED)
