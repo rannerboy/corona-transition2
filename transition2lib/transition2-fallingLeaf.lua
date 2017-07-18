@@ -5,7 +5,7 @@ TODO: Add comments and example
 
 transition.fallingLeaf(displayObject, {
     speed = 0.25, -- A value between 0-1. Default = 0.5.
-    windIntensity = 0.75, -- A value between 0-1. Default = 0.5.
+    intensity = 0.75, -- Affects horizontal movement and rotation. A value between 0-1. Default = 0.5.
     
     randomHorizontalDirection = true,
     rotate = false, -- Default = true. Applies rotation to the object.
@@ -16,8 +16,8 @@ Markus Ranner 2017
 
 --]]
 
-local DEFAULT_SPEED = 0.5
-local DEFAULT_WIND_INTENSITY = 0.5
+local DEFAULT_SPEED = 0.25
+local DEFAULT_INTENSITY = 0.5
 
 local function getValidSpeed(speed)
     if (speed == nil) then
@@ -33,31 +33,31 @@ end
 
 local function getBaseDeltaY(speed)
     local MIN_DELTA_Y = 25
-    local MAX_DELTA_Y = 400
+    local MAX_DELTA_Y = 500
     
     local baseDeltaY = ((MAX_DELTA_Y - MIN_DELTA_Y) * speed) + MIN_DELTA_Y
         
     return baseDeltaY
 end
 
-local function getBaseDeltaX(windIntensity)
+local function getBaseDeltaX(intensity)
     local MIN_DELTA_X = 25
     local MAX_DELTA_X = 300
     
-    local baseDeltaX = ((MAX_DELTA_X - MIN_DELTA_X) * windIntensity) + MIN_DELTA_X
+    local baseDeltaX = ((MAX_DELTA_X - MIN_DELTA_X) * intensity) + MIN_DELTA_X
     
     return baseDeltaX
 end
 
-local function getValidWindIntensity(windIntensity)
-    if (windIntensity == nil) then
-        return DEFAULT_WIND_INTENSITY
-    elseif (windIntensity < 0) then
+local function getValidIntensity(intensity)
+    if (intensity == nil) then
+        return DEFAULT_INTENSITY
+    elseif (intensity < 0) then
         return 0
-    elseif(windIntensity > 1) then
+    elseif(intensity > 1) then
         return 1
     else
-        return windIntensity
+        return intensity
     end   
 end
 
@@ -81,8 +81,8 @@ return function(transition2)
         local speed = getValidSpeed(params.speed)
         local baseDeltaY = getBaseDeltaY(speed)        
         
-        local windIntensity = getValidWindIntensity(params.windIntensity)
-        local baseDeltaX = getBaseDeltaX(windIntensity)
+        local intensity = getValidIntensity(params.intensity)
+        local baseDeltaX = getBaseDeltaX(intensity)
         
         local time = getTime(speed)
         
@@ -98,6 +98,7 @@ return function(transition2)
         moveVertical = function()
             
             -- Randomize radiusY slightly
+            -- FIXME: Make randomization customizable in params
             local radiusY = baseDeltaY * (math.random(80, 120) / 100)
             if (verticalDirection == "up") then
                 -- If going up, then reduce radius to a fraction of base radius
@@ -123,6 +124,7 @@ return function(transition2)
         moveHorizontal = function()
             
             -- Randomize radiusX quite a lot
+            -- FIXME: Make randomization customizable in params
             local radiusX = baseDeltaX * (math.random(50, 150) / 100)            
             
             transition2.moveSine(obj, {
@@ -147,13 +149,15 @@ return function(transition2)
         
         moveVertical()
         moveHorizontal()
-        
-        -- FIXME: rotation should depend on windIntensity
+                
         if (rotationEnabled) then
             transition.to(obj, {
                 time = time,
                 onIterationStart = function(obj, params)
-                    params.rotation = obj.rotation + math.random(-360, 360)
+                    -- FIXME: rotation should depend on intensity
+                    local rotationDelta = 90 + 720 * (math.random(1,2) == 1 and 1 or -1) * intensity
+                    
+                    params.rotation = obj.rotation + rotationDelta
                 end,
                 iterations = 0,
                 reverse = true,
@@ -162,9 +166,9 @@ return function(transition2)
             })                    
         end
         
-        -- FIXME: zRotate speed should depend on windIntensity
+        -- FIXME: zRotate speed should depend on intensity
         -- Apply zRotate
-        if (zRotationEnabled) then
+        if (false and zRotationEnabled) then
             -- FIXME: Allow a separate zRotate params object to be passed in to fallingLeaf() to customize the zRotation and overwrite default settings.
             transition.zRotate(obj, {
                 time = time,                 
