@@ -46,6 +46,8 @@ transition.cancel(...) --> transition2.cancel(...)
 
 Please note that transition2 is work in progress. There might be bugs, performance can likely be improved, and the number of new transition functions to choose from is still quite limited.
 
+There is currently no version handling at all, and breaking changes can be pushed to master branch at any time without notice. So make sure to test your code well in case you decide to replace your current version of transition2 with the latest one.
+
 Just grab the source code as is and make your own modifications if you need to. I'd be really happy for any feedback, especially in case you run into any bugs or other problems. And if you decide to implement your own custom transition function it would be awesome if you want to share it so I can make it part of the default transition2 library!
 
 ## Basic usage
