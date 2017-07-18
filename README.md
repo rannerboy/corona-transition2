@@ -364,7 +364,7 @@ transition.color(displayObject, {
 
 A complex convenience function that makes a display object fall from it's current position towards the bottom of the screen in gentle, randomized sinus wave patterns. Trying to imitate the movement of a falling leaf blowing in the wind.
 
-NOTE! Does not return a transition handle, so you have to use the tag param if you want to be able to control (pause/cancel/resume) a single fallingLeaf transition.
+NOTE! Does not return a transition handle, so you have to use the tag param if you want to be able to control a single fallingLeaf transition with pause/cancel/resume.
 
 ```lua
 transition.fallingLeaf(displayObject, {
