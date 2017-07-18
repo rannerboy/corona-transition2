@@ -16,7 +16,7 @@ transition.zRotate(displayObject, {
     perspective = 0.25, -- A value between 0-1. Defaults to 0.5.
     horizontal = true, -- Set to true for horizontal rotation (around the y axis). Default is vertical rotation (around the x axis)
     disableStrokeScaling = true, -- Set to true to disable scaling of strokes. Defaults is false, i.e. strokes are scaled.
-    shading = true, -- Applies a shading effect as the object rotates away
+    shading = true, -- Applies a shading effect as the object rotates away. Default = false.
     shadingDarknessIntensity = 0.75, -- A value between 0-1. Default = 1. Requires shading=true.
     shadingBrightnessIntensity = 0.25, -- A value between 0-1. Default = 0. Requires shading=true.
     static = false, -- Optonal, default = false. Set to true to apply final rotation immediately without doing an actual transition. If static=true, params like time, iterations etcetera have no effect.

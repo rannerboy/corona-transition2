@@ -1,7 +1,7 @@
 --[[
-Falling leaf
+Applies a falling leaf effect to a display object
 
-TODO: Add comments and example 
+Example usage:
 
 transition.fallingLeaf(displayObject, {
     speed = 0.25, -- A value between 0-1. Default = 0.5.
@@ -9,9 +9,19 @@ transition.fallingLeaf(displayObject, {
     horizontalIntensity = 0.75, -- A value between 0-1. Default = 0.5.    
     
     horizontalDirection, = One of {"alternate", "right", "left", "random" }. Default = "alternate".
+    
     rotate = false, -- Default = true. Applies rotation to the object.
-    zRotate = false, -- Default = true. Applies zRotate transition with shading.
-    rotationIntensity = 0.75, -- A value between 0-1. Default = 0.5.
+    zRotate = false, -- Default = true. Applies zRotate transition with specified zRotateParams.
+    rotationIntensity = 0.75, -- A value between 0-1. Default = 0.5. Applies to both 2d rotation and zRotate.
+    zRotateParams = {
+        -- The parameters below are the only ones from zRotate that can be customized.
+        -- For default values and usage, see zRotate() docs.
+        shading = true, -- Default = true
+        shadingDarknessIntensity = 0.5,
+        shadingBrightnessIntensity = 1,
+        perspective = 0.5,
+        disableStrokeScaling = true,
+    },    
 })
 
 Markus Ranner 2017
@@ -111,6 +121,7 @@ return function(transition2)
         local rotationIntensity = utils.getValidIntervalValue(params.rotationIntensity, 0, 1, DEFAULT_ROTATION_INTENSITY)
         local rotationEnabled = (params.rotate ~= false)
         local zRotationEnabled = (params.zRotate ~= false)
+        local zRotateParams = params.zRotateParams or {}
         
         local horizontalDirectionOption = getValidHorizontalDirectionOption(params.horizontalDirection)
         
@@ -188,20 +199,21 @@ return function(transition2)
         end
         
         -- Apply zRotate
-        if (zRotationEnabled) then
-            -- FIXME: Allow a separate zRotate params object to be passed in to fallingLeaf() to customize the zRotation and overwrite default settings.
+        if (zRotationEnabled) then            
             transition.zRotate(obj, {
                 time = time,                 
                 reverse = true,
                 iterations = 0,
                 horizontal = math.random(1,2) == 1,
-                shading = true, -- FIXME: Make it possible to disable shading
+                shading = (zRotateParams.shading ~= false),
                 onIterationStart = function(obj, params) 
                     params.degrees = randomizeRotationDelta(rotationIntensity, randomness)
                     params.horizontal = math.random(1,2) == 1
                 end,
-                shadingDarknessIntensity = 0.5,
-                shadingBrightnessIntensity = 0,
+                shadingDarknessIntensity = zRotateParams.shadingDarknessIntensity,
+                shadingBrightnessIntensity = zRotateParams.shadingBrightnessIntensity,
+                perspective = zRotateParams.perspective,
+                disableStrokeScaling = zRotateParams.disableStrokeScaling,
                 recalculateOnIteration = true,
                 transition = easing.inOutSine,
             })
