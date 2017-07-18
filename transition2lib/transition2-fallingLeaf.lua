@@ -153,7 +153,10 @@ return function(transition2)
                     -- Flip direction and start new moveSine transition
                     verticalDirection = (verticalDirection == "down") and "up" or "down"                    
                     moveVertical()
-                end
+                end,
+                cancelWhen = params.cancelWhen or nil,
+                -- Note! The onCancel will only be applied here and not to any other transition functions. This to avoid calling it more than once.
+                onCancel = params.onCancel or nil,
             })
         end
         
@@ -176,7 +179,8 @@ return function(transition2)
                     -- Calculate new direction of horizontal movement                    
                     horizontalDirection = getNextHorizontalDirection(horizontalDirection, horizontalDirectionOption)
                     moveHorizontal()
-                end
+                end,
+                cancelWhen = params.cancelWhen or nil,
             })
         end
         
@@ -195,6 +199,7 @@ return function(transition2)
                 reverse = true,
                 transition = easing.inOutSine,
                 recalculateOnIteration = true,
+                cancelWhen = params.cancelWhen or nil
             })                    
         end
         
@@ -216,6 +221,7 @@ return function(transition2)
                 disableStrokeScaling = zRotateParams.disableStrokeScaling,
                 recalculateOnIteration = true,
                 transition = easing.inOutSine,
+                cancelWhen = params.cancelWhen or nil
             })
         end
     end
