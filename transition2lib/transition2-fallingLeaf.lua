@@ -5,6 +5,7 @@ TODO: Add comments and example
 
 transition.fallingLeaf(displayObject, {
     speed = 0.25, -- A value between 0-1. Default = 0.5.
+    loopLength = 0.75, -- A value between 0-1. Default = 0.5.
     intensity = 0.75, -- Affects horizontal movement and rotation. A value between 0-1. Default = 0.5.
     
     randomHorizontalDirection = true,
@@ -16,20 +17,10 @@ Markus Ranner 2017
 
 --]]
 
+local utils = require("transition2lib.utils")
+
 local DEFAULT_SPEED = 0.25
 local DEFAULT_INTENSITY = 0.5
-
-local function getValidSpeed(speed)
-    if (speed == nil) then
-        return DEFAULT_SPEED
-    elseif (speed < 0) then
-        return 0
-    elseif(speed > 1) then
-        return 1
-    else
-        return speed
-    end    
-end
 
 local function getBaseDeltaY(speed)
     local MIN_DELTA_Y = 25
@@ -49,18 +40,6 @@ local function getBaseDeltaX(intensity)
     return baseDeltaX
 end
 
-local function getValidIntensity(intensity)
-    if (intensity == nil) then
-        return DEFAULT_INTENSITY
-    elseif (intensity < 0) then
-        return 0
-    elseif(intensity > 1) then
-        return 1
-    else
-        return intensity
-    end   
-end
-
 local function getTime(speed)
     local MIN_TIME = 1000
     local MAX_TIME = 3000
@@ -78,10 +57,10 @@ return function(transition2)
         -- FIXME: Handle cancelWhen function and pass it on
         
         -- Params decoding
-        local speed = getValidSpeed(params.speed)
+        local speed = utils.getValidIntervalValue(params.speed, 0, 1, DEFAULT_SPEED)
         local baseDeltaY = getBaseDeltaY(speed)        
         
-        local intensity = getValidIntensity(params.intensity)
+        local intensity = utils.getValidIntervalValue(params.intensity, 0, 1, DEFAULT_INTENSITY)
         local baseDeltaX = getBaseDeltaX(intensity)
         
         local time = getTime(speed)
@@ -135,6 +114,7 @@ return function(transition2)
                 startDegreesX = (horizontalDirection == "right") and 270 or 90,
                 iterations = 1,                
                 onIterationComplete = function(obj, params)                    
+                    -- FIXME: Allow four different settings: alternate(default)/left/right/random
                     -- Calculate new direction of horizontal movement
                     if (randomHorizontalDirection) then
                         horizontalDirection = (math.random(1, 2) == 1) and "right" or "left"

@@ -14,6 +14,21 @@ local function isUserData(target)
     return type(target) == "userdata"
 end
 
+--[[
+Takes a numeric value and makes sure that it is inside of the given interval.
+--]]
+local function getValidIntervalValue(value, intervalStart, intervalEnd, defaultValue)
+    if (value == nil) then
+        return defaultValue
+    elseif (value < intervalStart) then
+        return intervalStart
+    elseif(value > intervalEnd) then
+        return intervalEnd
+    else
+        return value
+    end
+end
+
 -- Performs a shallow copy of a table. 
 -- @return A new table
 local function copyTable(source)
@@ -60,6 +75,7 @@ return {
    toRadians = toRadians, 
    isRectPath = isRectPath,
    hasRectPath = hasRectPath,
+   getValidIntervalValue = getValidIntervalValue,
    copyTable = copyTable,
    isUserData = isUserData,
    isTransitionControlProp = isTransitionControlProp,
