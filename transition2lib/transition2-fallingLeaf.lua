@@ -208,7 +208,7 @@ return function(transition2)
                 
         local function rotate()
             if (rotationEnabled) then
-                transition.to(obj, {
+                transition2.to(obj, {
                     time = time,
                     onIterationStart = function(obj, params)
                         params.rotation = obj.rotation + randomizeRotationDelta(rotationIntensity, randomness)
@@ -224,7 +224,7 @@ return function(transition2)
             
             -- Apply zRotate
             if (zRotationEnabled) then            
-                transition.zRotate(obj, {
+                transition2.zRotate(obj, {
                     time = time,                 
                     reverse = true,
                     iterations = 0,
