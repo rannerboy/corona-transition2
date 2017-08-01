@@ -211,7 +211,10 @@ return function(transition2)
                 transition2.to(obj, {
                     time = time,
                     onIterationStart = function(obj, params)
-                        params.rotation = obj.rotation + randomizeRotationDelta(rotationIntensity, randomness)
+                        local currentRotation = obj.rotation
+                        if (currentRotation) then                            
+                            params.rotation = currentRotation + randomizeRotationDelta(rotationIntensity, randomness)
+                        end
                     end,
                     iterations = 0,
                     reverse = true,
