@@ -8,7 +8,8 @@ Example usage:
 local transition = require("transition2")
 
 transition.zRotate(displayObject, {
-    degrees = 360,
+    degrees = 360, -- Required. The number of degrees that the object should rotate from either its current zRotation angle or from params.startDegrees.
+    startDegrees = 180, -- Optional. If specified, the object will always start rotating FROM this angle instead of from its current zRotation angle.
     time = 2000,
     iterations = 0,    
     transition = easing.inOutSine,
@@ -34,12 +35,12 @@ local function scaleStroke(target, params, depthOffsetRatio)
 end
 
 return {
-    getStartValue = function(target, params)             
-        return 0        
+    getStartValue = function(target, params)                     
+        return params.startDegrees
     end,
 
-    getEndValue = function(target, params)        
-        return params.degrees
+    getEndValue = function(target, params)                
+        return params.startDegrees + params.degrees
     end,
 
     onValue = function(target, params, value, isReverseCycle)            
@@ -47,6 +48,9 @@ return {
         if (not utils.hasRectPath(target)) then
             return
         end
+        
+        -- Save current rotation angle to be able to use it as starting point for another call to zRotate
+        target.zRotation = value
         
         local radians = utils.toRadians(value)
         
@@ -132,6 +136,11 @@ return {
                 -- Default to 1 if invalid parameter. 1 = full darkness (black).
                 params.shadingDarknessIntensity = 1
             end            
+        end
+        
+        -- Determine angle to start rotating from        
+        if (params.startDegrees == nil) then
+            params.startDegrees = (target.zRotation or 0)
         end
         
         return params
