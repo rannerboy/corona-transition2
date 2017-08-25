@@ -461,7 +461,8 @@ Requires the target display object to have a path with four nodes ((x1, y1), ...
 
 ```lua
 transition.zRotate(displayObject, {
-    degrees = 360,
+    degrees = 360, -- Required. The number of degrees (delta) that the object should rotate, either from its current zRotation angle or from params.startDegrees.
+    startDegrees = 180, -- Optional. If specified, the object will always start rotating FROM this angle instead of from its current zRotation angle. Default = 0.
     time = 2000,
     iterations = 0,    
     transition = easing.inOutSine,
