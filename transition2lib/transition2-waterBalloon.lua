@@ -30,6 +30,13 @@ end
 local SCALE_FACTOR = 0.5
 
 return {
+    getInitialValue = function(displayObject, params)
+        return {
+            xScale = params.originalXScale,
+            yScale = params.originalYScale,
+        }
+    end,
+
     getStartValue = function(displayObject, params)     
         return {
             xScale = params.originalXScale,

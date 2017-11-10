@@ -133,6 +133,9 @@ local transitionHandler = function(transitionRef)
         -- If transition should be reversed, we reverse it and start over by resetting current transition time
         if (transitionRef.reverse and not transitionRef.isReverseCycle) then
             transitionRef.isReverseCycle = true
+            if transitionRef.transitionExtension.getInitialValue then
+                transitionRef.startValue = transitionRef.transitionExtension.getStartValue(transitionRef.target, transitionRef.params)
+            end
             transitionRef.startValue, transitionRef.endValue = transitionRef.endValue, transitionRef.startValue
             transitionRef.easingFunc, transitionRef.easingReverseFunc = transitionRef.easingReverseFunc, transitionRef.easingFunc
             transitionRef.currentTransitionTime = 0
@@ -302,7 +305,11 @@ local function doExtendedTransition(transitionExtension, target, params)
             end
             
             -- Then get the start/end values
-            transitionRef.startValue = transitionExtension.getStartValue(target, params)
+            if transitionExtension.getInitialValue then
+                transitionRef.startValue = transitionExtension.getInitialValue(target, params)
+            else
+                transitionRef.startValue = transitionExtension.getStartValue(target, params)
+            end
             transitionRef.endValue = transitionExtension.getEndValue(target, params)
             
             -- Finally, flag the transition ref as started to allow shared enter frame listener to run it
