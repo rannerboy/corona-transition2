@@ -66,6 +66,7 @@ local function cleanUpTransition(transitionRef)
                 timer.performWithDelay(20, removeTransition)
             end
         end
+        removeTransition()
     end
 end
 
