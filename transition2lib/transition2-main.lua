@@ -4,6 +4,7 @@ Should NOT be altered when just implementing new custom transition functions.
 
 Markus Ranner 2017
 --]]
+local utils = require("transition2lib.utils")
 
 -- The transition2 module that will be populated with functions
 local transition2 = {}
@@ -225,7 +226,11 @@ local function doExtendedTransition(transitionExtension, target, params)
     end
     
     -- Override params
-    params = transitionExtension.getParams and transitionExtension.getParams(target, params) or params
+    -- We make a copy of the table to avoid weird side effects if the params table is modified by the getParams() function
+    params = utils.copyTable(params)
+    if (transitionExtension.getParams) then
+        params = transitionExtension.getParams(target, params)
+    end    
     
     -- Create a new transition reference to that will be returned from the transition extension function
     -- This reference holds a the entire config (and some state) for a transition and will be used to uniquely identify each transition
