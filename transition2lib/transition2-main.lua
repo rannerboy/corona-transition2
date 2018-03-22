@@ -123,6 +123,9 @@ local transitionHandler = function(transitionRef)
         
         -- Pass the next value(s) to the handling function of the transition implementation
         transitionRef.transitionExtension.onValue(transitionRef.target, transitionRef.params, nextValue, transitionRef.isReverseCycle)
+        if (transitionRef.onValue) then
+            transitionRef.onValue(transitionRef.target, nextValue)
+        end
     else
         -- Finally, just make sure that we have reached the correct end value            
         -- We have to check a special case here, i.e. easing.continuousLoop which will end at the startValue instead of at the endValue...
@@ -131,6 +134,9 @@ local transitionHandler = function(transitionRef)
             finalValue = transitionRef.startValue
         end
         transitionRef.transitionExtension.onValue(transitionRef.target, transitionRef.params, finalValue, transitionRef.isReverseCycle)            
+        if (transitionRef.onValue) then
+            transitionRef.onValue(transitionRef.target, finalValue)
+        end
                        
         -- If transition should be reversed, we reverse it and start over by resetting current transition time
         if (transitionRef.reverse and not transitionRef.isReverseCycle) then
@@ -252,6 +258,7 @@ local function doExtendedTransition(transitionExtension, target, params)
         endValue = nil,
         easingFunc = params.transition or easing.linear,
         easingReverseFunc = params.transitionReverse or params.transition or easing.linear,
+        onValue = params.onValue,
         onComplete = params.onComplete,
         onStart = params.onStart,
         onPause = params.onPause,
@@ -259,7 +266,7 @@ local function doExtendedTransition(transitionExtension, target, params)
         onCancel = params.onCancel,
         onRepeat = params.onRepeat,
         onIterationStart = params.onIterationStart,
-        onIterationComplete = params.onIterationComplete,
+        onIterationComplete = params.onIterationComplete,        
         cancelWhen = function()
             -- The cancelWhen function can be set both in params and in the transition config, so we check both to see if at least one is fulfilled.
             return (
@@ -286,6 +293,9 @@ local function doExtendedTransition(transitionExtension, target, params)
         timer.performWithDelay(transitionRef.delay, function()            
             local endValue = transitionExtension.getEndValue(target, params)
             transitionExtension.onValue(target, params, endValue, false)
+            if (transitionRef.onValue) then
+                transitionRef.onValue(target, endValue)
+            end
         end)
     else
         -- Save transition reference on target object. Use ref as key for quick indexing and resetting
