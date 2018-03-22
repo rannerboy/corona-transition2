@@ -20,7 +20,8 @@ transition.zRotate(displayObject, {
     shading = true, -- Applies a shading effect as the object rotates away. Default = false.
     shadingDarknessIntensity = 0.75, -- A value between 0-1. Default = 1. Requires shading=true.
     shadingBrightnessIntensity = 0.25, -- A value between 0-1. Default = 0. Requires shading=true.
-    static = false, -- Optonal, default = false. Set to true to apply final rotation immediately without doing an actual transition. If static=true, params like time, iterations etcetera have no effect.
+    static = false, -- Optional, default = false. Set to true to apply final rotation immediately without doing an actual transition. If static=true, params like time, iterations etcetera have no effect.
+    hideBackside = true, -- Optional, default = false. Set to true to hide the target object if it appears to be turned away from the display.
 })
 
 Markus Ranner 2017
@@ -141,6 +142,18 @@ return {
         -- Determine angle to start rotating from        
         if (params.startDegrees == nil) then
             params.startDegrees = (target.zRotation or 0)
+        end
+        
+        -- The hideBackside params makes it possible to hide the target object if it appears to be turned away from the display
+        if (params.hideBackside == true) then
+            local innerOnValue = params.onValue or function() end
+            params.onValue = function(target, value)
+                local degrees = math.abs(value % 360)
+                local isTurnedAway = ((degrees > 90) and (degrees < 270))
+                target.isVisible = not isTurnedAway
+                
+                innerOnValue(target, value)
+            end
         end
         
         return params

@@ -99,6 +99,15 @@ transition.color(displayObject, {
     
     --]]    
     
+    -- If onValue is specified it will get called on every frame with the current transition specific value (or table of values) that has been applied to the target object.
+    -- Can be used to update context when certain conditions are met for the transition, or to make changes to the target object itself during certain parts of the transition.
+    onValue = function(target, value)
+        local R,G,B = value[1], value[2], value[3]
+        if (R > 0.8 and G > 0.8 and B > 0.8) then
+            print("This color is pretty bright!")
+        end
+    end,
+    
     -- iterationDelay will only occur between iterations, i.e. not before the first iteration or after the last iteration.
     iterationDelay = 500,
     
@@ -474,6 +483,7 @@ transition.zRotate(displayObject, {
     shadingDarknessIntensity = 0.75, -- A value between 0-1. Default = 1. Requires shading=true.
     shadingBrightnessIntensity = 0.25, -- A value between 0-1. Default = 0. Requires shading=true.
     static = false, -- Optional, default = false. Set to true to apply final rotation immediately without doing an actual transition. If static=true, params like time, iterations etcetera have no effect.
+    hideBackside = true, -- Optional, default = false. Set to true to hide the target object if it appears to be turned away from the display.
 })
 ```
 
