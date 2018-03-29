@@ -240,7 +240,7 @@ Syntax:
 transition.dissolve( object1, object2, time, delay )
 ```
 
-**Note!** dissolve() does not support the new transition2 params like reverse, onIterationStart, cancelWhen etcetera. This because it is totally different to all other transition functions and doesn't even accept a params object as parameter. It has only been implemented in transition2 for backwards compatibility with the transition library in case the dependency between transition2 and transition is cut.
+**Note!** dissolve() does not support the new transition2 params like reverse, onIterationStart, cancelWhen etcetera. This because it is totally different to all other transition functions and doesn't even accept a params object as parameter. It has only been implemented in transition2 for backwards compatibility with the transition library.
 
 ### fadeIn()
 
