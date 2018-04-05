@@ -17,11 +17,13 @@ Markus Ranner 2017
 --]]
 return {
     getStartValue = function(displayObject, params)     
-        return displayObject.y
+        -- Default value for y is to protect against crashes if display object has been removed
+        return displayObject.y or 0
     end,
 
     getEndValue = function(displayObject, params)
-        return displayObject.y - params.height
+        -- Default value for y is to protect against crashes if display object has been removed
+        return (displayObject.y or 0) - params.height
     end,
 
     onValue = function(displayObject, params, value, isReverseCycle)
