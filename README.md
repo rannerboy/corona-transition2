@@ -6,6 +6,10 @@ The current documentation is rather brief, but go ahead and have a look at the s
 
 You can also check out [this topic in the Corona forums](https://forums.coronalabs.com/topic/69305-transition2-a-customizable-extension-to-the-transition-library/) to see some live examples, make feature requests, report bugs, or just let me know what you think about transition2. Thanks!
 
+## License
+
+transition2 is licensed under the MIT License. See [LICENSE.txt] for details.
+
 ## Installing
 
 Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder at the root of your Corona project.
