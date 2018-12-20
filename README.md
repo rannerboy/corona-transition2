@@ -8,7 +8,7 @@ You can also check out [this topic in the Corona forums](https://forums.coronala
 
 ## License
 
-transition2 is licensed under the MIT License. See [transition2/LICENSE.txt](transition2/LICENSE.txt) for details.
+transition2 is licensed under the MIT License. See [LICENSE.txt](LICENSE.txt) for details.
 
 ## Installing
 
