@@ -382,7 +382,7 @@ transition.fallingLeaf(displayObject, {
     verticalIntensity = 0.75, -- A value between 0-1. Default = 0.5.
     horizontalIntensity = 0.75, -- A value between 0-1. Default = 0.5.    
     
-    horizontalDirection, = One of {"alternate", "right", "left", "random" }. Default = "alternate".
+    horizontalDirection = "random", -- One of {"alternate", "right", "left", "random" }. Default = "alternate".
     
     randomness = 0.75, -- A value between 0-1. A larger value means more randomness. Default = 0.5.
     
