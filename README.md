@@ -349,11 +349,12 @@ transition = require("transition2")
 ```
 
 ### bounce()
-Bounces a display object.
+Bounces a display object in x/y direction or both.
 
 ```lua
 transition.bounce(displayObject, { 
-    height = 400, -- Set to negative value to bounce downwards
+    height = 400, -- Bounces upwards. Set to negative value to bounce downwards.
+    width = 200, -- Bounces to the right. Set to negative value to bounce left.
     time = 1000,        
     iterations = 0,
 })
