@@ -1,10 +1,10 @@
 # What is transition2?
 
-**transition2 is a full rewrite of the [Corona transition library](https://docs.coronalabs.com/api/library/transition/index.html)**. It replicates every function of the transition library and also includes a set of new transition functions, such as color(), moveSine() and zRotate(). A number of new parameters have also been introduced together with an easy way to auto-cancel transitions that are no longer valid. Last but not least, transition2 can be extended with your own custom transition functions. Unleash your imagination. :-)
+**transition2 is a full rewrite of the [Solar2D (~~Corona~~) transition library](https://docs.coronalabs.com/api/library/transition/index.html)**. It replicates every function of the transition library and also includes a set of new transition functions, such as color(), moveSine() and zRotate(). A number of new parameters have also been introduced together with an easy way to auto-cancel transitions that are no longer valid. Last but not least, transition2 can be extended with your own custom transition functions. Unleash your imagination. :-)
 
 The current documentation is rather brief, but go ahead and have a look at the source code for better understanding, it's fairly well commented.
 
-You can also check out [this topic in the Corona forums](https://forums.coronalabs.com/topic/69305-transition2-a-customizable-extension-to-the-transition-library/) to see some live examples, make feature requests, report bugs, or just let me know what you think about transition2. Thanks!
+You can also check out [this topic in the Solar2D forums](https://forums.solar2d.com/t/transition2-a-customizable-extension-to-the-transition-library/344516) to see some live examples, make feature requests, report bugs, or just let me know what you think about transition2. Thanks!
 
 ## License
 
@@ -12,9 +12,9 @@ transition2 is licensed under the MIT License. See [LICENSE.txt](LICENSE.txt) fo
 
 ## Installing
 
-Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder at the root of your Corona project.
+Clone corona-transition2 and place **transition2.lua** and the entire **transition2lib** folder at the root of your Solar2D project.
 
-**NOTE!** If you're not placing transition2 directly at the root of your Corona project, make sure to change the require statements in **transition2.lua**, and probably also in most Lua files in the transition2lib folder...
+**NOTE!** If you're not placing transition2 directly at the root of your Solar2D project, make sure to change the require statements in **transition2.lua**, and probably also in most Lua files in the transition2lib folder...
 
 Require transition2 into a local variable to have full control of which transition2 functions to use, like this:
 
@@ -76,7 +76,7 @@ transition.color(displayObject, {
     --[[
     
     Below are general parameters that can be applied to all transition2 functions
-    A couple of them are transition2 specific, but most of them work just like for the original Corona transition library    
+    A couple of them are transition2 specific, but most of them work just like for the original Solar2D transition library    
     
     --]]
     time = 1000,
